@@ -3,11 +3,13 @@
 import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
+import ProjectVideo from "./ProjectVideo";
 
 interface CardProps {
   title: string;
   description: string;
   image: string;
+  video?: string;
   link: string;
   date?: string;
   tags?: string[];
@@ -18,6 +20,7 @@ export default function Card({
   title,
   description,
   image,
+  video,
   link,
   date,
   tags,
@@ -30,13 +33,17 @@ export default function Card({
     >
       <div className="flex-shrink-0">
         <Link href={link} aria-label={`View ${title}`}>
-          <Image
-            className="h-48 w-full object-cover transition-transform hover:scale-105"
-            src={image}
-            alt={`Cover image for ${title}`}
-            width={500}
-            height={300}
-          />
+          {type === "project" ? (
+            <ProjectVideo video={video} image={image} title={title} />
+          ) : (
+            <Image
+              className="h-48 w-full object-cover transition-transform hover:scale-105"
+              src={image}
+              alt={`Cover image for ${title}`}
+              width={500}
+              height={300}
+            />
+          )}
         </Link>
       </div>
       <div className="flex flex-1 flex-col justify-between p-6">

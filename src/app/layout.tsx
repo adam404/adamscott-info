@@ -1,8 +1,18 @@
 import type { Metadata } from "next";
 import { GeistSans } from "geist/font/sans";
 import { GeistMono } from "geist/font/mono";
+import { Alata } from "next/font/google";
 import { Analytics } from "@vercel/analytics/react";
+import Navigation from "@/components/Navigation";
 import "./globals.css";
+import "../styles/prism.css";
+
+const alata = Alata({
+  weight: ["400"],
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-alata",
+});
 
 export const metadata: Metadata = {
   title: "Adam Scott - Software Engineer & Technical Leader",
@@ -44,9 +54,13 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={`${GeistSans.variable} ${GeistMono.variable}`}>
-      <body>
-        {children}
+    <html
+      lang="en"
+      className={`${GeistSans.variable} ${GeistMono.variable} ${alata.variable}`}
+    >
+      <body className={alata.className}>
+        <Navigation />
+        <main>{children}</main>
         <Analytics />
       </body>
     </html>

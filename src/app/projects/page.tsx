@@ -1,56 +1,59 @@
-import { useState } from 'react'
-import Link from 'next/link'
-import Navigation from '@/components/Navigation'
-import Card from '@/components/Card'
+import fs from "fs/promises";
+import path from "path";
+import matter from "gray-matter";
+import Link from "next/link";
+import Navigation from "@/components/Navigation";
+import Card from "@/components/Card";
 
-const projects = [
-  {
-    title: 'Next.js Portfolio Website',
-    description: 'A modern portfolio website built with Next.js 14, TypeScript, and Tailwind CSS.',
-    image: '/projects/portfolio.png',
-    link: '/projects/portfolio',
-    tags: ['Next.js', 'TypeScript', 'Tailwind CSS'],
-  },
-  {
-    title: 'Cloud Infrastructure Management',
-    description: 'Automated cloud infrastructure management system using Terraform and AWS.',
-    image: '/projects/cloud.png',
-    link: '/projects/cloud-infrastructure',
-    tags: ['AWS', 'Terraform', 'DevOps'],
-  },
-  {
-    title: 'E-commerce Platform',
-    description: 'Full-stack e-commerce solution with React, Node.js, and PostgreSQL.',
-    image: '/projects/ecommerce.png',
-    link: '/projects/ecommerce',
-    tags: ['React', 'Node.js', 'PostgreSQL'],
-  },
-  {
-    title: 'Real-time Chat Application',
-    description: 'WebSocket-based chat application with user authentication and message history.',
-    image: '/projects/chat.png',
-    link: '/projects/chat',
-    tags: ['WebSocket', 'React', 'Node.js'],
-  },
-  {
-    title: 'DevOps Pipeline Automation',
-    description: 'Automated CI/CD pipeline setup for containerized applications.',
-    image: '/projects/devops.png',
-    link: '/projects/devops',
-    tags: ['Docker', 'Jenkins', 'Kubernetes'],
-  },
-  {
-    title: 'API Gateway Service',
-    description: 'Microservices API gateway with rate limiting and authentication.',
-    image: '/projects/api.png',
-    link: '/projects/api-gateway',
-    tags: ['Microservices', 'Node.js', 'Redis'],
-  },
-]
+interface ProjectFrontmatter {
+  title: string;
+  description: string;
+  date: string;
+  roles: string[];
+  tech: string[];
+  image: string;
+  video?: string;
+  featured?: boolean;
+}
 
-const allTags = Array.from(new Set(projects.flatMap(project => project.tags)))
+interface Project extends ProjectFrontmatter {
+  slug: string;
+}
 
-export default function Projects() {
+// Helper function to get all projects
+async function getProjects(): Promise<Project[]> {
+  const projectsDirectory = path.join(process.cwd(), "src/content/projects");
+  const files = await fs.readdir(projectsDirectory);
+
+  const projects = await Promise.all(
+    files
+      .filter((file) => file.endsWith(".mdx"))
+      .map(async (file) => {
+        const filePath = path.join(projectsDirectory, file);
+        const source = await fs.readFile(filePath, "utf8");
+        const { data } = matter(source);
+
+        return {
+          ...(data as ProjectFrontmatter),
+          slug: file.replace(/\.mdx$/, ""),
+        };
+      })
+  );
+
+  // Sort projects: featured first, then by date
+  return projects.sort((a, b) => {
+    if (a.featured && !b.featured) return -1;
+    if (!a.featured && b.featured) return 1;
+    return new Date(b.date).getTime() - new Date(a.date).getTime();
+  });
+}
+
+export default async function Projects() {
+  const projects = await getProjects();
+  const allTags = Array.from(
+    new Set(projects.flatMap((project) => project.tech))
+  );
+
   return (
     <div className="bg-white dark:bg-gray-900">
       <Navigation />
@@ -59,7 +62,9 @@ export default function Projects() {
         {/* Header */}
         <div className="px-6 pt-32 sm:pt-40 lg:px-8">
           <div className="mx-auto max-w-2xl text-center">
-            <h1 className="text-4xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-6xl">Projects</h1>
+            <h1 className="text-4xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-6xl">
+              Projects
+            </h1>
             <p className="mt-6 text-lg leading-8 text-gray-600 dark:text-gray-300">
               A showcase of my technical projects and contributions.
             </p>
@@ -85,8 +90,12 @@ export default function Projects() {
           <div className="mx-auto grid max-w-2xl grid-cols-1 gap-x-8 gap-y-20 lg:mx-0 lg:max-w-none lg:grid-cols-3">
             {projects.map((project) => (
               <Card
-                key={project.title}
-                {...project}
+                key={project.slug}
+                title={project.title}
+                description={project.description}
+                image={project.image}
+                link={`/projects/${project.slug}`}
+                tags={project.tech}
                 type="project"
               />
             ))}
@@ -114,5 +123,5 @@ export default function Projects() {
         </div>
       </main>
     </div>
-  )
-} 
+  );
+}

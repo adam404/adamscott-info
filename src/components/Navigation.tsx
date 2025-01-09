@@ -1,29 +1,62 @@
-'use client'
+"use client";
 
-import { useState } from 'react'
-import Link from 'next/link'
-import { usePathname } from 'next/navigation'
-import { Dialog } from '@headlessui/react'
-import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline'
+import { useState, useEffect } from "react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { Dialog } from "@headlessui/react";
+import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
+import { motion, useScroll } from "framer-motion";
 
 const navigation = [
-  { name: 'Home', href: '/' },
-  { name: 'About', href: '/about' },
-  { name: 'Blog', href: '/blog' },
-  { name: 'Projects', href: '/projects' },
-  { name: 'Contact', href: '/contact' },
-]
+  { name: "Home", href: "/" },
+  { name: "About", href: "/about" },
+  { name: "Blog", href: "/blog" },
+  { name: "Projects", href: "/projects" },
+  { name: "Contact", href: "/contact" },
+];
 
-export default function Navigation() {
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
-  const pathname = usePathname()
+export default function Navigation({
+  forceWhiteBackground = false,
+}: {
+  forceWhiteBackground?: boolean;
+}) {
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const pathname = usePathname();
+  const { scrollY } = useScroll();
+  const [hasScrolled, setHasScrolled] = useState(false);
+
+  useEffect(() => {
+    const unsubscribe = scrollY.on("change", (latest) => {
+      setHasScrolled(latest > 0);
+    });
+
+    return () => unsubscribe();
+  }, [scrollY]);
 
   return (
-    <header className="absolute inset-x-0 top-0 z-50">
-      <nav className="flex items-center justify-between p-6 lg:px-8" aria-label="Global">
+    <motion.header
+      className="fixed inset-x-0 top-0 z-50"
+      animate={{
+        backgroundColor:
+          forceWhiteBackground || hasScrolled
+            ? "rgba(255, 255, 255, 1)"
+            : "rgba(255, 255, 255, 0)",
+      }}
+      transition={{ duration: 0.2 }}
+      style={{
+        boxShadow:
+          forceWhiteBackground || hasScrolled
+            ? "0 1px 3px 0 rgb(0 0 0 / 0.1)"
+            : "none",
+      }}
+    >
+      <nav
+        className="flex items-center justify-between p-6 lg:px-8"
+        aria-label="Global"
+      >
         <div className="flex lg:flex-1">
-          <Link href="/" className="-m-1.5 p-1.5 text-foreground font-bold">
-            Adam Scott
+          <Link href="/" className="-m-1.5 p-1.5 text-foreground">
+            <span className="font-alata text-2xl font-bold">Adam Scott</span>
           </Link>
         </div>
         <div className="flex lg:hidden">
@@ -43,8 +76,8 @@ export default function Navigation() {
               href={item.href}
               className={`text-sm font-semibold leading-6 ${
                 pathname === item.href
-                  ? 'text-foreground'
-                  : 'text-muted-foreground hover:text-foreground'
+                  ? "text-foreground"
+                  : "text-muted-foreground hover:text-foreground"
               }`}
             >
               {item.name}
@@ -52,12 +85,17 @@ export default function Navigation() {
           ))}
         </div>
       </nav>
-      <Dialog as="div" className="lg:hidden" open={mobileMenuOpen} onClose={setMobileMenuOpen}>
-        <div className="fixed inset-0 z-50" />
-        <Dialog.Panel className="fixed inset-y-0 right-0 z-50 w-full overflow-y-auto bg-background px-6 py-6 sm:max-w-sm sm:ring-1 sm:ring-border">
+      <Dialog
+        as="div"
+        className="lg:hidden"
+        open={mobileMenuOpen}
+        onClose={setMobileMenuOpen}
+      >
+        <div className="fixed inset-0 z-50 lg:hidden" />
+        <Dialog.Panel className="fixed inset-y-0 right-0 z-50 w-full overflow-y-auto bg-background px-6 py-6 sm:max-w-sm sm:ring-1 sm:ring-border lg:hidden">
           <div className="flex items-center justify-between">
-            <Link href="/" className="-m-1.5 p-1.5 text-foreground font-bold">
-              Adam Scott
+            <Link href="/" className="-m-1.5 p-1.5 text-foreground">
+              <span className="font-alata text-2xl font-bold">Adam Scott</span>
             </Link>
             <button
               type="button"
@@ -77,8 +115,8 @@ export default function Navigation() {
                     href={item.href}
                     className={`-mx-3 block rounded-lg px-3 py-2 text-base font-semibold leading-7 ${
                       pathname === item.href
-                        ? 'text-foreground bg-accent'
-                        : 'text-muted-foreground hover:bg-accent'
+                        ? "text-foreground bg-accent"
+                        : "text-muted-foreground hover:bg-accent"
                     }`}
                     onClick={() => setMobileMenuOpen(false)}
                   >
@@ -90,6 +128,6 @@ export default function Navigation() {
           </div>
         </Dialog.Panel>
       </Dialog>
-    </header>
-  )
-} 
+    </motion.header>
+  );
+}
