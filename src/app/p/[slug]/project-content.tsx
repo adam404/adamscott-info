@@ -13,7 +13,7 @@ interface Project {
   image: string;
   video?: string;
   slug: string;
-  content: JSX.Element;
+  content: React.ReactElement;
   links: {
     github: string;
     live: string;
