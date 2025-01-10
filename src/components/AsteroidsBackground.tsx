@@ -48,8 +48,8 @@ export default function AsteroidsBackground({
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const contextRef = useRef<CanvasRenderingContext2D | null>(null);
   const dimensionsRef = useRef({
-    width: window.innerWidth,
-    height: window.innerHeight,
+    width: 1024,
+    height: 768,
   });
   const frameRef = useRef<number>(0);
   const lastFrameTimeRef = useRef<number>(0);
@@ -66,6 +66,13 @@ export default function AsteroidsBackground({
     thrusting: false,
     lastShot: 0,
   });
+
+  useEffect(() => {
+    dimensionsRef.current = {
+      width: window.innerWidth,
+      height: window.innerHeight,
+    };
+  }, []);
 
   const createAsteroid = useCallback(
     (x?: number, y?: number, size?: number): Particle => {

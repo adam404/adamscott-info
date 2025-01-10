@@ -129,8 +129,15 @@ export async function generateStaticParams() {
     }));
 }
 
-export async function generateMetadata(props: { params: { slug: string } }) {
-  const project = await getProject(props.params.slug);
+type Params = Promise<{ slug: string }>;
+type SearchParams = Promise<{ [key: string]: string | string[] | undefined }>;
+
+export async function generateMetadata(props: {
+  params: Params;
+  searchParams: SearchParams;
+}) {
+  const params = await props.params;
+  const project = await getProject(params.slug);
   if (!project) return { title: "Project Not Found" };
 
   return {
@@ -156,11 +163,11 @@ export async function generateMetadata(props: { params: { slug: string } }) {
   };
 }
 
-export default async function ProjectPage({
-  params,
-}: {
-  params: { slug: string };
+export default async function ProjectPage(props: {
+  params: Params;
+  searchParams: SearchParams;
 }) {
+  const params = await props.params;
   const project = await getProject(params.slug);
   if (!project) notFound();
 

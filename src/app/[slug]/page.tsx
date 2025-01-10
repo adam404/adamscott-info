@@ -9,6 +9,7 @@ import Image from "next/image";
 import Navigation from "@/components/Navigation";
 import CodeBlock from "@/components/CodeBlock";
 import InlineCode from "@/components/InlineCode";
+import type { Metadata } from "next/types";
 
 const components = {
   table: (props: any) => (
@@ -85,21 +86,21 @@ export async function generateStaticParams() {
     }));
 }
 
-interface BlogPageProps {
-  params: {
-    slug: string;
-  };
-}
+type Params = Promise<{ slug: string }>;
+type SearchParams = Promise<{ [key: string]: string | string[] | undefined }>;
 
-export async function generateMetadata({
-  params,
-}: BlogPageProps): Promise<Metadata> {
+export async function generateMetadata(props: {
+  params: Params;
+  searchParams: SearchParams;
+}): Promise<Metadata> {
   // Safely read MDX frontmatter
   try {
+    const params = await props.params;
+    const slug = params.slug;
     const filePath = path.join(
       process.cwd(),
       "src/content/blog",
-      `${params.slug}.mdx`
+      `${slug}.mdx`
     );
     const source = await fs.readFile(filePath, "utf8");
     const { data } = matter(source);
@@ -129,32 +130,40 @@ export async function generateMetadata({
   }
 }
 
-export default async function BlogPost({ params }: BlogPageProps) {
+async function getBlogPost(slug: string) {
+  const filePath = path.join(process.cwd(), "src/content/blog", `${slug}.mdx`);
+  const source = await fs.readFile(filePath, "utf8");
+  const { data, content } = matter(source);
+
+  const { content: mdxContent } = await compileMDX({
+    source: content,
+    components,
+    options: {
+      mdxOptions: {
+        remarkPlugins: [remarkGfm],
+        // @ts-ignore - Types are not properly exported from rehype-prism-plus
+        rehypePlugins: [[rehypePrism, { showLineNumbers: true }]],
+      },
+    },
+  });
+
+  return { data, mdxContent };
+}
+
+export default async function BlogPost(props: {
+  params: Params;
+  searchParams: SearchParams;
+}) {
   // Validate and sanitize the slug parameter
-  if (!params.slug || typeof params.slug !== "string") {
+  const params = await props.params;
+  const slug = params.slug;
+
+  if (!slug || typeof slug !== "string") {
     notFound();
   }
 
   try {
-    const filePath = path.join(
-      process.cwd(),
-      "src/content/blog",
-      `${params.slug}.mdx`
-    );
-    const source = await fs.readFile(filePath, "utf8");
-    const { data, content } = matter(source);
-
-    const { content: mdxContent } = await compileMDX({
-      source: content,
-      components,
-      options: {
-        mdxOptions: {
-          remarkPlugins: [remarkGfm],
-          // @ts-ignore - Types are not properly exported from rehype-prism-plus
-          rehypePlugins: [[rehypePrism, { showLineNumbers: true }]],
-        },
-      },
-    });
+    const { data, mdxContent } = await getBlogPost(slug);
 
     return (
       <article className="relative">
