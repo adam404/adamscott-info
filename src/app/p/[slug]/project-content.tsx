@@ -3,6 +3,7 @@
 import { format } from "date-fns";
 import Navigation from "@/components/Navigation";
 import ProjectVideo from "@/components/ProjectVideo";
+import React from "react";
 
 interface Project {
   title: string;
