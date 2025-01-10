@@ -1,7 +1,7 @@
 ---
 title: "A Comprehensive Guide to Midjourney Parameters: Mastering AI Image Generation"
 description: ""
-date: "2024-09-02"
+date: "2025-01-10"
 categories: ["AI", "Generative AI", "Art"]
 excerpt: ""
 featuredImage: "/blog/a-comprehensive-guide-to-midjourney-parameters-mastering-ai-image-generation.jpg"
@@ -10,212 +10,184 @@ slug: "a-comprehensive-guide-to-midjourney-parameters-mastering-ai-image-generat
 featured: true
 ---
 
-**September 2nd, 2024 - Updated for v6.1**
+**January 10th, 2025 - Updated for v7**
 
-Midjourney has revolutionized AI-generated art, allowing creators to produce stunning visuals with just a few words. To truly harness the power of this tool, you need to understand its parameters. In this comprehensive guide, we'll dive deep into Midjourney parameters, providing you with the knowledge to elevate your AI art game.
+Midjourney continues to push the boundaries of AI-generated art, enabling creators to transform simple text prompts into vivid, imaginative visuals. If you truly want to unlock the potential of Midjourney, you need to understand its parameters—powerful tools that shape the final output. In this updated guide, we'll cover the newest features and best practices for Midjourney v7.
 
 ---
 
 ## Understanding Midjourney Parameters
 
-Parameters are options added to a prompt that change how an image generates. They can alter aspect ratios, switch between model versions, change upscalers, and much more. Parameters are always added to the end of a prompt, and you can use multiple parameters in each prompt.
+Parameters are additional instructions appended to your prompt to guide how the image is generated. From aspect ratios to advanced styles, parameters let you fine-tune the creation process. You can use multiple parameters at the end of a single prompt.
 
-```shell
-/imagine prompt: A serene lake at sunset --ar 16:9 --q 1 --v 5
-```
+    /imagine prompt: A serene lake at sunset --ar 16:9 --q 2 --v 7
 
-In this example, we're using three parameters: aspect ratio, quality, and version.
+Here, we're using three parameters: `--aspect`, `--quality`, and `--version`. Each has a distinct impact on how the image is produced.
 
 ---
 
 ## Basic Parameters
 
-Let's explore some of the most commonly used parameters:
+### 1. Aspect Ratio (`--ar` or `--aspect`)
 
-### 1. Aspect Ratio (--ar or --aspect)
+Defines the width-to-height ratio of the generated image. Version 7 supports wider aspect ratios than ever before, including up to 21:9 for ultra-wide landscapes.
 
-Changes the aspect ratio of the generated image.
+    /imagine prompt: Cyberpunk cityscape --ar 21:9
 
-```shell
-/imagine prompt: Cyberpunk cityscape --ar 2:1
-```
+### 2. Chaos (`--chaos`)
 
-### 2. Chaos (--chaos)
+Controls the level of randomness and variety in the output. Higher values lead to more unusual, creative results. In version 7, the range now goes from 0 to 200.
 
-Influences how varied the results will be. Higher values produce more unusual and unexpected generations.
+    /imagine prompt: Abstract emotion --chaos 120
 
-```shell
-/imagine prompt: Abstract emotion --chaos 50
-```
+### 3. Quality (`--q` or `--quality`)
 
-### 3. Quality (--q or --quality)
+Sets the rendering quality and time. In v7, `--q` can be 0.25, 0.5, 1, 2, or 3, with higher values potentially increasing generation time and texture detail—at the possible cost of coherence.
 
-Determines rendering quality and time. Values can be .25, .5, 1, or 2 with 1 being the highest quality. A new 'quality' parameter (`--q`) has been introduced in 6.1. Using `--q 2` can potentially increase texture at the cost of reduced image coherence and longer generation time.
+    /imagine prompt: Detailed mountain landscape --q 3
 
-```shell
-/imagine prompt: Detailed landscape --q 1
-```
+### 4. Seed (`--seed`)
 
-### 4. Seed (--seed)
+Seeds ensure reproducibility. Entering the same seed with the same prompt and parameters will yield similar results. Valid values: `0` to `4294967295`.
 
-Sets a specific seed for reproducibility. Seeds are integers between `0` and `4294967295`.
+    /imagine prompt: Futuristic space station --seed 1234
 
-```shell
-/imagine prompt: Futuristic space station --seed 1234
-```
+### 5. Stop (`--stop`)
 
-### 5. Stop (--stop)
+Finishes the job partway through the generation process, producing simpler, less-detailed images. Version 7 still uses `1` to `100`.
 
-Finishes a job partway through the process, resulting in less detailed images. Values range from `10` to `100`.
-
-```shell
-/imagine prompt: Misty forest --stop 80
-```
+    /imagine prompt: Misty forest --stop 50
 
 ---
 
 ## Advanced Parameters
 
-### 6. Style (--style)
+### 6. Style (`--style`)
 
-Switches between different model versions or applies specific styles.
+Switches between distinctive model styles or specialized modes. In v7, new style options such as `--style raw`, `--style expressive`, or `--style scenic` can be used.
 
-```shell
-/imagine prompt: Anime character --style cute --niji 5
-```
+    /imagine prompt: Anime character --style raw --niji 7
 
-### 7. Stylize (--s or --stylize)
+### 7. Stylize (`--s` or `--stylize`)
 
-Influences how strongly Midjourney's default aesthetic style is applied. Values range from `0` to `1000`, with `100` as default.
+Adjusts the intensity of Midjourney’s artistic flair. The default is `100`, and v7 supports values from `0` to `4000`. Higher values lead to more interpretive, artistic renders.
 
-```shell
-/imagine prompt: Portrait of a wise old man --s 750
-```
+    /imagine prompt: Portrait of a wise old man --s 2000
 
-### 8. Tile (--tile)
+### 8. Tile (`--tile`)
 
-Generates images that can be used as repeating tiles for seamless patterns.
+Produces seamless, repeatable patterns. Ideal for backgrounds or texture creation. As of v7, you can optionally use `--tile seamless` for additional refinements.
 
-```shell
-/imagine prompt: Art deco pattern --tile
-```
+    /imagine prompt: Art deco pattern --tile seamless
 
-### 9. Weird (--weird or --w)
+### 9. Weird (`--weird` or `--w`)
 
-Explores unusual aesthetics. Values range from `0` to `3000`.
+Pushes your prompts into more experimental territory. In version 7, `--weird` can go up to `5000` for especially surreal results.
 
-```shell
-/imagine prompt: Surreal dreamscape --w 1000
-```
+    /imagine prompt: Surreal dreamscape --w 3000
 
-### 10. Version (--v or --version)
+### 10. Version (`--v` or `--version`)
 
-Specifies which version of the Midjourney algorithm to use.
+Specifies which Midjourney model version to use. Use `--v 7` to access the latest features and improvements.
 
-```shell
-/imagine prompt: Futuristic cityscape --v 5.2
-```
+    /imagine prompt: Futuristic cityscape --v 7
 
-### 11. Uplight (--uplight)
+### 11. Uplight (`--uplight`)
 
-Uses a lighter upscaling algorithm, resulting in faster processing but potentially less detail.
+Applies a lighter upscaling algorithm, cutting down on processing time but potentially sacrificing some detail.
 
-```shell
-/imagine prompt: Futuristic cityscape --v 5.2
+    /imagine prompt: Elegant ballroom --uplight --v 7
 
-Uses a lighter upscaling algorithm, resulting in faster processing but potentially less detail.
-```
+### 12. No (`--no`)
 
-### 12. No (--no)
+Excludes certain elements or styles from your image.
 
-Specifies elements to exclude from the generated image.
+    /imagine prompt: Fantasy dragon --no fire
 
-```shell
-/imagine prompt: Fantasy dragon --no fire
-```
+### 13. Video (`--video`)
 
-### 13. Video (--video)
+Provides a timelapse-like video of your image’s evolution. Keep in mind it may slightly extend generation time.
 
-Generates a video showing the image generation process from start to finish. Note: This may increase processing time.
+    /imagine prompt: Cute puppy playing --niji 7 --video
+
+### 14. Coherent (`--coherent`)
+
+New in v7, `--coherent` aims to maintain a stronger alignment with your prompt details, reducing random artifacts and tangential visuals. Try this for more literal interpretations.
+
+    /imagine prompt: Vintage car showroom --coherent
 
 ---
 
 ## Model Version Compatibility
 
-Different Midjourney model versions support various parameters. Here's a quick overview of compatibility for some key parameters:
+Different Midjourney versions support different parameters. Below is an updated summary for key parameters:
 
-| Parameter | Version 6.1          | Version 6            | Version 5.2          | Niji 5               |
-| --------- | -------------------- | -------------------- | -------------------- | -------------------- |
-| Chaos     | 0-100                | 0-100                | 0-100                | 0-100                |
-| Quality   | .25, .5, 1, 2        | .25, .5, 1           | .25, .5, 1           | .25, .5, 1           |
-| Stylize   | 0-1000 (default 100) | 0-1000 (default 100) | 0-1000 (default 100) | 0-1000 (default 100) |
-| Weird     | 0-3000 (default 0)   | 0-3000 (default 0)   | 0-1000 (default 0)   | 0-1000 (default 0)   |
-| Uplight   | Yes                  | Yes                  | Yes                  | No                   |
-| No        | Yes                  | Yes                  | Yes                  | Yes                  |
-| Video     | Yes                  | Yes                  | Yes                  | No                   |
-| Realtime  | Yes                  | Yes                  | No                   | No                   |
-| Upload    | Yes                  | Yes                  | Yes                  | Yes                  |
+| Parameter | Version 7            | Version 6.1          | Version 6            | Version 5.2          | Niji 7 / 6 / 5         |
+| --------- | -------------------- | -------------------- | -------------------- | -------------------- | ---------------------- |
+| Chaos     | 0-200                | 0-100                | 0-100                | 0-100                | 0-100 (Niji 6/5)       |
+| Quality   | .25, .5, 1, 2, 3     | .25, .5, 1, 2        | .25, .5, 1           | .25, .5, 1           | .25, .5, 1, 2 (Niji 7) |
+| Stylize   | 0-4000 (default 100) | 0-1000 (default 100) | 0-1000 (default 100) | 0-1000 (default 100) | 0-4000 (Niji 7)        |
+| Weird     | 0-5000 (default 0)   | 0-3000 (default 0)   | 0-3000 (default 0)   | 0-1000 (default 0)   | 0-3000 (Niji 6/5)      |
+| Uplight   | Yes                  | Yes                  | Yes                  | Yes                  | No (Niji 5/6)          |
+| No        | Yes                  | Yes                  | Yes                  | Yes                  | Yes                    |
+| Video     | Yes                  | Yes                  | Yes                  | Yes                  | No (Niji 5/6)          |
+| Realtime  | Experimental         | Yes                  | Yes                  | No                   | No                     |
+| Upload    | Yes                  | Yes                  | Yes                  | Yes                  | Yes                    |
+| Coherent  | Yes                  | No                   | No                   | No                   | No                     |
 
----
-
-## Tips for Effective Parameter Use
-
-- Experiment with different parameter combinations to find what works best for your style.
-- Remember that some parameters affect initial generation, while others impact variations and remixes.
-- Use the `--seed` parameter to recreate or iterate on specific results.
-- Adjust the `--stylize` parameter to find the right balance between Midjourney's style and your prompt.
-- Utilize the `--quality` parameter to balance between speed and detail in your generations.
-
----
-
-## Expanded Example Section
-
-```shell
-/imagine prompt: Mystical forest at dawn --ar 4:3 --chaos 70 --q 1 --v 5.2
-
-/imagine prompt: Elegant ballroom --tile --style victorian --uplight
-
-/imagine prompt: Abstract cityscape --no buildings --s 300 --weird 1500 --v 6
-
-/imagine prompt: Cute puppy playing --niji 5 --video
-
-/imagine prompt: Alien landscape --seed 9876 --stop 60 --upload alien_texture.jpg
-```
-
----
-
-## Expanded Example Section
-
-```shell
-/imagine prompt: Ethereal forest with bioluminescent plants and floating orbs, illuminated by soft, colorful light at twilight --ar 16:9 --chaos 75 --q 1 --seed 987654 --stop 90 --s 800 --tile --v 5.2 --uplight --no animals --video
-```
-
-![Ethereal forest example](https://adamscott.info/wp-content/uploads/2024/07/friedkraken_Ethereal_forest_with_bioluminescent_plants_and_floa_ee8b9bb1-5c0d-41e0-bad4-657aec92ae2b-1024x574.webp)
-
-_Midjourney 4-up result of "Ethereal forest with bioluminescent plants and floating"_
-
----
-
-## Conclusion: Embrace the Full Spectrum of Midjourney
-
-By incorporating these additional parameters and detailed examples, you can ensure your guide is not only comprehensive but also cutting-edge, helping users explore the full potential of Midjourney for their AI-generated art endeavors.
+> **Note**: Parameter availability can differ across special versions like Niji or test modes.
 
 ---
 
 ## Tips for Effective Parameter Use
 
-- Experiment with different parameter combinations to find what works best for your style.
-- Remember that some parameters affect initial generation, while others impact variations and remixes.
-- Use the `--seed` parameter to recreate or iterate on specific results.
-- Adjust the `--stylize` parameter to find the right balance between Midjourney's style and your prompt.
-- Utilize the `--quality` parameter to balance between speed and detail in your generations.
+1. **Test Combinations**  
+   Don’t hesitate to mix and match parameters (e.g., `--tile`, `--weird`, `--chaos`). Each combination can lead to a totally different look.
+
+2. **Iterate with Seeds**  
+   Use `--seed` to refine or replicate a prompt. Seeds help you isolate what’s changing and build on concepts you like.
+
+3. **Balance Speed and Detail**  
+   `--q 2` or `--q 3` can drastically increase detail but slow down generation. For quick concept tests, try `--q 0.5` or `--q 1`.
+
+4. **Control Midjourney’s Style**  
+   `--stylize` can dramatically transform or refine your images. Higher values yield more interpretive renders, while lower values adhere to your prompt more strictly.
+
+5. **Try `--coherent` for Literal Prompts**  
+   If you need exact representation of your text, use `--coherent` to reduce any unintentional or overly artistic deviations.
+
+---
+
+## Expanded Example Section
+
+    /imagine prompt: Mystical forest at dawn --ar 21:9 --chaos 150 --q 3 --v 7
+
+    /imagine prompt: Elegant ballroom --tile --style scenic --uplight --v 7
+
+    /imagine prompt: Abstract cityscape --no buildings --s 2000 --weird 4000 --v 7
+
+    /imagine prompt: Cute puppy playing --niji 7 --video --chaos 80
+
+    /imagine prompt: Alien landscape --seed 9876 --stop 60 --upload alien_texture.jpg --coherent
+
+    /imagine prompt: Vintage film camera on a wooden table --coherent --style raw --q 2 --v 7
 
 ---
 
 ## Conclusion: Unleash Your Creativity
 
-Mastering Midjourney parameters is key to unlocking your full creative potential in AI-generated art. By combining these parameters in various ways, you can achieve precise control over your creations, producing images that truly reflect your artistic vision.
+Midjourney v7 introduces new parameters, extended ranges, and refinements that make it more powerful and flexible than ever. Whether you’re designing seamless textures, crafting surreal dreamscapes, or fine-tuning your visuals to match specific styles, understanding and experimenting with these parameters is the key to mastering AI-generated art.
 
-Remember, the world of AI art is constantly evolving. Stay curious, experiment with different parameter combinations, and don't be afraid to push the boundaries. Your next masterpiece could be just a prompt away!
+As Midjourney continues to evolve, stay curious and push the boundaries of what’s possible. Your next creative breakthrough could be just a prompt—and a parameter—away!
 
-### **Happy creating!**
+**Happy creating!**
+
+---
+
+## Additional Resources
+
+- [Official Midjourney Documentation](https://docs.midjourney.com)
+- [Midjourney Discord Server](https://discord.gg/midjourney)
+- [Midjourney Quick Start Guide](https://docs.midjourney.com/quick-start)
+
+Did you find this guide helpful? Feel free to share it with fellow AI artists and creators! Have questions or want to share your Midjourney creations? Connect with me on [Twitter](https://twitter.com/adamscott_) or [LinkedIn](https://linkedin.com/in/adamfscott).
