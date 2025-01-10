@@ -85,11 +85,16 @@ export async function generateStaticParams() {
     }));
 }
 
+interface BlogPageProps {
+  params: {
+    slug: string;
+  };
+}
+
 export async function generateMetadata({
   params,
-}: {
-  params: { slug: string };
-}) {
+}: BlogPageProps): Promise<Metadata> {
+  // Safely read MDX frontmatter
   try {
     const filePath = path.join(
       process.cwd(),
@@ -97,9 +102,11 @@ export async function generateMetadata({
       `${params.slug}.mdx`
     );
     const source = await fs.readFile(filePath, "utf8");
-    const { data, content } = matter(source);
+    const { data } = matter(source);
 
-    if (!data) return { title: "Post Not Found" };
+    if (!data) {
+      return { title: "Post Not Found" };
+    }
 
     return {
       title: `${data.title} | Adam Scott's Blog`,
@@ -122,11 +129,7 @@ export async function generateMetadata({
   }
 }
 
-export default async function BlogPost({
-  params,
-}: {
-  params: { slug: string };
-}) {
+export default async function BlogPost({ params }: BlogPageProps) {
   // Validate and sanitize the slug parameter
   if (!params.slug || typeof params.slug !== "string") {
     notFound();
