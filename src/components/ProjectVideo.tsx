@@ -67,7 +67,7 @@ export default function ProjectVideo({
   return (
     <video
       ref={videoRef}
-      className="h-48 w-full object-cover transition-transform hover:scale-105"
+      className="w-full object-cover transition-transform hover:scale-105"
       autoPlay
       muted
       loop

@@ -32,6 +32,11 @@ export default function ProjectsClient({
   allTags,
 }: ProjectsClientProps) {
   const [isFiring, setIsFiring] = useState(false);
+  const [selectedTag, setSelectedTag] = useState<string | null>(null);
+
+  const filteredProjects = selectedTag
+    ? projects.filter((project) => project.tech.includes(selectedTag))
+    : projects;
 
   return (
     <div className="min-h-screen relative bg-gray-900">
@@ -60,10 +65,23 @@ export default function ProjectsClient({
           {/* Filters */}
           <div className="mx-auto mt-12 max-w-7xl px-6 lg:px-8">
             <div className="flex flex-wrap gap-2">
+              {selectedTag && (
+                <button
+                  onClick={() => setSelectedTag(null)}
+                  className="rounded-full bg-blue-500/10 px-3 py-1 text-sm font-semibold leading-6 text-blue-300 ring-1 ring-inset ring-blue-500/20"
+                >
+                  Clear Filter
+                </button>
+              )}
               {allTags.map((tag) => (
                 <button
                   key={tag}
-                  className="rounded-full bg-blue-500/10 px-3 py-1 text-sm font-semibold leading-6 text-blue-300 ring-1 ring-inset ring-blue-500/20 hover:bg-blue-500/20"
+                  onClick={() => setSelectedTag(tag)}
+                  className={`rounded-full px-3 py-1 text-sm font-semibold leading-6 ring-1 ring-inset transition-colors ${
+                    selectedTag === tag
+                      ? "bg-blue-500 text-white ring-blue-500"
+                      : "bg-blue-500/10 text-blue-300 ring-blue-500/20 hover:bg-blue-500/20"
+                  }`}
                 >
                   {tag}
                 </button>
@@ -74,7 +92,7 @@ export default function ProjectsClient({
           {/* Projects Grid */}
           <div className="mx-auto mt-16 max-w-7xl px-6 lg:px-8">
             <div className="mx-auto grid max-w-2xl grid-cols-1 gap-x-8 gap-y-20 lg:mx-0 lg:max-w-none lg:grid-cols-3">
-              {projects.map((project) => (
+              {filteredProjects.map((project) => (
                 <Card
                   key={project.slug}
                   title={project.title}
