@@ -72,7 +72,7 @@ interface Project {
   image: string;
   video?: string;
   slug: string;
-  content: React.ReactNode;
+  content: React.ReactElement;
   links: {
     github: string;
     live: string;

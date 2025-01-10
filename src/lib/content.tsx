@@ -14,7 +14,7 @@ interface ContentItem {
   featured?: boolean;
   tags: string[];
   slug: string;
-  content?: JSX.Element;
+  content?: React.ReactElement;
 }
 
 const components = {
