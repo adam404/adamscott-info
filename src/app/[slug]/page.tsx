@@ -87,33 +87,39 @@ export async function generateStaticParams() {
 
 export async function generateMetadata({
   params,
-  post,
 }: {
   params: { slug: string };
-  post: {
-    title: string;
-    description: string;
-    featuredImage: string;
-  };
 }) {
-  if (!post) return { title: "Post Not Found" };
+  try {
+    const filePath = path.join(
+      process.cwd(),
+      "src/content/blog",
+      `${params.slug}.mdx`
+    );
+    const source = await fs.readFile(filePath, "utf8");
+    const { data, content } = matter(source);
 
-  return {
-    title: `${post.title} | Adam Scott's Blog`,
-    description: post.description,
-    openGraph: {
-      title: post.title,
-      description: post.description,
-      images: [post.featuredImage],
-      type: "article",
-    },
-    twitter: {
-      card: "summary_large_image",
-      title: post.title,
-      description: post.description,
-      images: [post.featuredImage],
-    },
-  };
+    if (!data) return { title: "Post Not Found" };
+
+    return {
+      title: `${data.title} | Adam Scott's Blog`,
+      description: data.description,
+      openGraph: {
+        title: data.title,
+        description: data.description,
+        images: [data.featuredImage],
+        type: "article",
+      },
+      twitter: {
+        card: "summary_large_image",
+        title: data.title,
+        description: data.description,
+        images: [data.featuredImage],
+      },
+    };
+  } catch (error) {
+    return { title: "Post Not Found" };
+  }
 }
 
 export default async function BlogPost({

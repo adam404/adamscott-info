@@ -2,6 +2,7 @@ import fs from "fs/promises";
 import path from "path";
 import matter from "gray-matter";
 import ProjectsClient from "./projects-client";
+import { Metadata } from "next";
 
 interface ProjectFrontmatter {
   title: string;
@@ -45,6 +46,24 @@ async function getProjects(): Promise<Project[]> {
     return new Date(b.date).getTime() - new Date(a.date).getTime();
   });
 }
+
+export const metadata: Metadata = {
+  title: "Projects | Adam Scott - Software Engineer & Technical Leader",
+  description:
+    "Explore my portfolio of technical projects and contributions in web development, cloud architecture, and software engineering.",
+  openGraph: {
+    title: "Projects | Adam Scott - Software Engineer & Technical Leader",
+    description:
+      "Explore my portfolio of technical projects and contributions in web development, cloud architecture, and software engineering.",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Projects | Adam Scott",
+    description:
+      "Explore my portfolio of technical projects and contributions in web development, cloud architecture, and software engineering.",
+  },
+};
 
 export default async function Projects() {
   const projects = await getProjects();

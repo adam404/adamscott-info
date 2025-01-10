@@ -136,6 +136,23 @@ export async function generateMetadata(props: { params: { slug: string } }) {
   return {
     title: `${project.title} | Adam Scott's Projects`,
     description: project.description,
+    openGraph: {
+      title: project.title,
+      description: project.description,
+      type: "article",
+      images: [project.image],
+      publishedTime: project.date,
+      modifiedTime: project.date,
+      authors: ["Adam Scott"],
+      tags: project.technologies,
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: project.title,
+      description: project.description,
+      images: [project.image],
+      creator: "@adamscott",
+    },
   };
 }
 

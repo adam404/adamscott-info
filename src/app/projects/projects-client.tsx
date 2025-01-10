@@ -5,6 +5,7 @@ import Navigation from "@/components/Navigation";
 import Card from "@/components/Card";
 import AsteroidsBackground from "@/components/AsteroidsBackground";
 import Footer from "@/components/Footer";
+import { useState } from "react";
 
 interface ProjectFrontmatter {
   title: string;
@@ -30,13 +31,17 @@ export default function ProjectsClient({
   projects,
   allTags,
 }: ProjectsClientProps) {
+  const [isFiring, setIsFiring] = useState(false);
+
   return (
     <div className="min-h-screen relative bg-gray-900">
       {/* Background */}
-      <AsteroidsBackground />
+      <AsteroidsBackground onFire={setIsFiring} />
 
       {/* Content */}
-      <div className="relative z-10">
+      <div
+        className={`relative z-10 transition-opacity duration-300 ${isFiring ? "opacity-0" : "opacity-100"}`}
+      >
         <Navigation forceWhiteBackground />
 
         <main>

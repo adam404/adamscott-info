@@ -1,16 +1,17 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState, useCallback } from "react";
 
 interface Particle {
   x: number;
   y: number;
   size: number;
-  speed: number;
+  speedX: number;
+  speedY: number;
   angle: number;
   rotation: number;
-  points: number[];
   rotationSpeed: number;
+  points: number[];
   type: "asteroid" | "geometric";
 }
 
@@ -18,8 +19,10 @@ interface Ship {
   x: number;
   y: number;
   angle: number;
-  speed: number;
-  engineGlow: number;
+  velocityX: number;
+  velocityY: number;
+  rotationSpeed: number;
+  thrusting: boolean;
   lastShot: number;
 }
 
@@ -28,315 +31,456 @@ interface Projectile {
   y: number;
   angle: number;
   speed: number;
-  lifespan: number;
+  life: number;
 }
 
 interface Props {
   forceWhiteBackground?: boolean;
+  onFire?: (value: boolean | ((prev: boolean) => boolean)) => void;
 }
 
 export default function AsteroidsBackground({
   forceWhiteBackground = false,
+  onFire,
 }: Props) {
-  const svgRef = useRef<SVGSVGElement>(null);
+  const [score, setScore] = useState(0);
+  const [gameOver, setGameOver] = useState(false);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const contextRef = useRef<CanvasRenderingContext2D | null>(null);
+  const dimensionsRef = useRef({
+    width: window.innerWidth,
+    height: window.innerHeight,
+  });
   const frameRef = useRef<number>(0);
+  const lastFrameTimeRef = useRef<number>(0);
   const particlesRef = useRef<Particle[]>([]);
   const projectilesRef = useRef<Projectile[]>([]);
+  const keysRef = useRef<{ [key: string]: boolean }>({});
   const shipRef = useRef<Ship>({
-    x: window ? window.innerWidth / 2 : 960,
-    y: window ? window.innerHeight / 2 : 540,
+    x: dimensionsRef.current.width / 2,
+    y: dimensionsRef.current.height / 2,
     angle: 0,
-    speed: 2,
-    engineGlow: 0,
+    velocityX: 0,
+    velocityY: 0,
+    rotationSpeed: 0.1,
+    thrusting: false,
     lastShot: 0,
   });
 
-  const createGeometric = (x?: number, y?: number): Particle => {
-    const size = Math.random() * 60 + 40; // Larger geometric shapes
-    const points: number[] = [];
-    const numPoints = Math.floor(Math.random() * 3) + 3; // 3-5 points for geometric shapes
+  const createAsteroid = useCallback(
+    (x?: number, y?: number, size?: number): Particle => {
+      const asteroidSize = size ?? Math.random() * 30 + 15;
+      const points: number[] = [];
+      const numPoints = Math.floor(Math.random() * 4) + 8;
 
-    for (let i = 0; i < numPoints; i++) {
-      const angle = (i / numPoints) * Math.PI * 2;
-      const variance = 1; // No variance for geometric shapes
-      points.push(Math.cos(angle) * size * variance);
-      points.push(Math.sin(angle) * size * variance);
+      for (let i = 0; i < numPoints; i++) {
+        const angle = (i / numPoints) * Math.PI * 2;
+        const variance = Math.random() * 0.6 + 0.7;
+        points.push(Math.cos(angle) * asteroidSize * variance);
+        points.push(Math.sin(angle) * asteroidSize * variance);
+      }
+
+      return {
+        x: x ?? Math.random() * dimensionsRef.current.width,
+        y: y ?? Math.random() * dimensionsRef.current.height,
+        size: asteroidSize,
+        speedX: (Math.random() - 0.5) * 2,
+        speedY: (Math.random() - 0.5) * 2,
+        angle: Math.random() * Math.PI * 2,
+        rotation: Math.random() * Math.PI * 2,
+        rotationSpeed: (Math.random() - 0.5) * 0.03,
+        points,
+        type: "asteroid",
+      };
+    },
+    []
+  );
+
+  const initializeParticles = useCallback(() => {
+    const { width, height } = dimensionsRef.current;
+    particlesRef.current = [];
+
+    // Add asteroids at edges
+    for (let i = 0; i < 8; i++) {
+      const size = 30 + (i % 3) * 10;
+      let x, y;
+
+      if (i < 4) {
+        x = i < 2 ? -size : width + size;
+        y = Math.random() * height;
+      } else {
+        x = Math.random() * width;
+        y = i < 6 ? -size : height + size;
+      }
+
+      particlesRef.current.push(createAsteroid(x, y, size));
     }
+  }, [createAsteroid]);
 
-    return {
-      x: x ?? Math.random() * (window?.innerWidth ?? 1920),
-      y: y ?? Math.random() * (window?.innerHeight ?? 1080),
-      size,
-      speed: Math.random() * 0.3 + 0.1, // Slower for larger objects
-      angle: Math.random() * Math.PI * 2,
-      rotation: Math.random() * Math.PI * 2,
-      points,
-      rotationSpeed: (Math.random() - 0.5) * 0.01,
-      type: "geometric",
-    };
-  };
+  const updateParticles = useCallback((deltaTime: number) => {
+    particlesRef.current.forEach((particle) => {
+      particle.x +=
+        particle.speedX * (particle.type === "asteroid" ? 2 : 1) * deltaTime;
+      particle.y +=
+        particle.speedY * (particle.type === "asteroid" ? 2 : 1) * deltaTime;
+      particle.rotation += particle.rotationSpeed * deltaTime;
 
-  const createAsteroid = (x?: number, y?: number): Particle => {
-    const size = Math.random() * 30 + 15;
-    const points: number[] = [];
-    const numPoints = Math.floor(Math.random() * 4) + 8; // More jagged points
+      const { width, height } = dimensionsRef.current;
+      if (particle.x < -particle.size) particle.x = width + particle.size;
+      else if (particle.x > width + particle.size) particle.x = -particle.size;
+      if (particle.y < -particle.size) particle.y = height + particle.size;
+      else if (particle.y > height + particle.size) particle.y = -particle.size;
+    });
+  }, []);
 
-    for (let i = 0; i < numPoints; i++) {
-      const angle = (i / numPoints) * Math.PI * 2;
-      const variance = Math.random() * 0.6 + 0.7; // More variance for jagged look
-      points.push(Math.cos(angle) * size * variance);
-      points.push(Math.sin(angle) * size * variance);
-    }
+  const updateShip = useCallback(
+    (deltaTime: number) => {
+      if (gameOver) return;
 
-    return {
-      x: x ?? Math.random() * (window?.innerWidth ?? 1920),
-      y: y ?? Math.random() * (window?.innerHeight ?? 1080),
-      size,
-      speed: Math.random() * 1 + 0.5, // Faster asteroids
-      angle: Math.random() * Math.PI * 2,
-      rotation: Math.random() * Math.PI * 2,
-      points,
-      rotationSpeed: (Math.random() - 0.5) * 0.03, // Faster rotation
-      type: "asteroid",
-    };
-  };
+      const ship = shipRef.current;
+      const thrust = 0.3 * deltaTime;
+      const friction = Math.pow(0.99, deltaTime);
 
-  const createProjectile = (ship: Ship): Projectile => {
-    return {
-      x: ship.x + Math.cos(ship.angle) * 15, // Start at ship's nose
+      if (keysRef.current["ArrowLeft"])
+        ship.angle -= ship.rotationSpeed * deltaTime;
+      if (keysRef.current["ArrowRight"])
+        ship.angle += ship.rotationSpeed * deltaTime;
+
+      ship.thrusting = keysRef.current["ArrowUp"];
+      if (ship.thrusting) {
+        ship.velocityX += Math.cos(ship.angle) * thrust;
+        ship.velocityY += Math.sin(ship.angle) * thrust;
+      }
+
+      ship.velocityX *= friction;
+      ship.velocityY *= friction;
+
+      ship.x += ship.velocityX * deltaTime;
+      ship.y += ship.velocityY * deltaTime;
+
+      const { width, height } = dimensionsRef.current;
+      if (ship.x < 0) ship.x = width;
+      else if (ship.x > width) ship.x = 0;
+      if (ship.y < 0) ship.y = height;
+      else if (ship.y > height) ship.y = 0;
+    },
+    [gameOver]
+  );
+
+  const createProjectile = useCallback(
+    (ship: Ship): Projectile => ({
+      x: ship.x + Math.cos(ship.angle) * 15,
       y: ship.y + Math.sin(ship.angle) * 15,
       angle: ship.angle,
       speed: 8,
-      lifespan: Date.now() + 2000, // 2 seconds lifespan
-    };
-  };
+      life: Date.now() + 2000,
+    }),
+    []
+  );
 
-  const updateProjectiles = () => {
+  const updateProjectiles = useCallback((deltaTime: number) => {
     const now = Date.now();
     projectilesRef.current = projectilesRef.current
-      .filter((p) => p.lifespan > now)
+      .filter((p) => p.life > now)
       .map((p) => {
-        p.x += Math.cos(p.angle) * p.speed;
-        p.y += Math.sin(p.angle) * p.speed;
+        p.x += Math.cos(p.angle) * p.speed * deltaTime;
+        p.y += Math.sin(p.angle) * p.speed * deltaTime;
         return p;
       });
-
-    // Auto-shoot every 500ms
-    if (now - shipRef.current.lastShot > 500) {
-      projectilesRef.current.push(createProjectile(shipRef.current));
-      shipRef.current.lastShot = now;
-    }
-  };
-
-  const initParticles = () => {
-    const particles: Particle[] = [];
-    // Add geometric shapes
-    for (let i = 0; i < 4; i++) {
-      particles.push(createGeometric());
-    }
-    // Add regular asteroids
-    for (let i = 0; i < 12; i++) {
-      particles.push(createAsteroid());
-    }
-    particlesRef.current = particles;
-  };
-
-  const updateParticles = () => {
-    const width = window?.innerWidth ?? 1920;
-    const height = window?.innerHeight ?? 1080;
-
-    particlesRef.current = particlesRef.current.map((p) => {
-      // Update position
-      p.x += Math.cos(p.angle) * p.speed;
-      p.y += Math.sin(p.angle) * p.speed;
-      p.rotation += p.rotationSpeed;
-
-      // Wrap around screen
-      if (p.x < -p.size) p.x = width + p.size;
-      if (p.x > width + p.size) p.x = -p.size;
-      if (p.y < -p.size) p.y = height + p.size;
-      if (p.y > height + p.size) p.y = -p.size;
-
-      return p;
-    });
-  };
-
-  const updateShip = () => {
-    const ship = shipRef.current;
-    const width = window?.innerWidth ?? 1920;
-    const height = window?.innerHeight ?? 1080;
-
-    // Update ship position with smooth movement
-    ship.angle += 0.01;
-    ship.x += Math.cos(ship.angle) * ship.speed;
-    ship.y += Math.sin(ship.angle) * ship.speed;
-    ship.engineGlow = Math.sin(Date.now() / 100) * 0.3 + 0.7; // Pulsing engine effect
-
-    // Wrap around screen
-    if (ship.x < 0) ship.x = width;
-    if (ship.x > width) ship.x = 0;
-    if (ship.y < 0) ship.y = height;
-    if (ship.y > height) ship.y = 0;
-  };
-
-  const animate = () => {
-    updateParticles();
-    updateShip();
-    updateProjectiles();
-    frameRef.current = requestAnimationFrame(animate);
-  };
-
-  useEffect(() => {
-    initParticles();
-    frameRef.current = requestAnimationFrame(animate);
-
-    const handleResize = () => {
-      if (svgRef.current) {
-        svgRef.current.setAttribute("width", window.innerWidth.toString());
-        svgRef.current.setAttribute("height", window.innerHeight.toString());
-      }
-    };
-
-    window.addEventListener("resize", handleResize);
-    handleResize();
-
-    return () => {
-      cancelAnimationFrame(frameRef.current);
-      window.removeEventListener("resize", handleResize);
-    };
   }, []);
 
+  const checkCollisions = useCallback(() => {
+    if (gameOver) return;
+
+    const ship = shipRef.current;
+    const shipRadius = 10;
+
+    // First handle projectile collisions
+    for (let i = particlesRef.current.length - 1; i >= 0; i--) {
+      const particle = particlesRef.current[i];
+      if (particle.type === "asteroid") {
+        // Check projectile collisions first
+        for (let j = projectilesRef.current.length - 1; j >= 0; j--) {
+          const projectile = projectilesRef.current[j];
+          const pdx = projectile.x - particle.x;
+          const pdy = projectile.y - particle.y;
+          const pDistanceSquared = pdx * pdx + pdy * pdy;
+          const pMinDistance = particle.size * 0.8;
+
+          if (pDistanceSquared < pMinDistance * pMinDistance) {
+            projectilesRef.current.splice(j, 1);
+
+            if (particle.size > 25) {
+              const newSize = particle.size * 0.6;
+              const newAsteroids = [
+                createAsteroid(particle.x, particle.y, newSize),
+                createAsteroid(particle.x, particle.y, newSize),
+              ];
+              particlesRef.current.splice(i, 1);
+              particlesRef.current.push(...newAsteroids);
+            } else {
+              particlesRef.current.splice(i, 1);
+            }
+
+            setScore((prev) => prev + 100);
+            break;
+          }
+        }
+      }
+    }
+
+    // Then check ship collisions with remaining asteroids
+    for (const particle of particlesRef.current) {
+      if (particle.type === "asteroid") {
+        const dx = ship.x - particle.x;
+        const dy = ship.y - particle.y;
+        const distanceSquared = dx * dx + dy * dy;
+        const minDistance = shipRadius + particle.size * 0.7;
+
+        if (distanceSquared < minDistance * minDistance) {
+          setGameOver(true);
+          return;
+        }
+      }
+    }
+
+    // Spawn new asteroids
+    const asteroidCount = particlesRef.current.filter(
+      (p) => p.type === "asteroid"
+    ).length;
+    if (asteroidCount < 3 && Math.random() < 0.1) {
+      const { width, height } = dimensionsRef.current;
+      const size = 30 + Math.random() * 20;
+      const spawnSide = Math.floor(Math.random() * 4);
+      let x, y;
+
+      switch (spawnSide) {
+        case 0:
+          x = -size;
+          y = Math.random() * height;
+          break;
+        case 1:
+          x = width + size;
+          y = Math.random() * height;
+          break;
+        case 2:
+          x = Math.random() * width;
+          y = -size;
+          break;
+        default:
+          x = Math.random() * width;
+          y = height + size;
+      }
+
+      particlesRef.current.push(createAsteroid(x, y, size));
+    }
+  }, [gameOver, createAsteroid]);
+
+  const draw = useCallback(() => {
+    const ctx = contextRef.current;
+    if (!ctx) return;
+
+    // Clear canvas
+    ctx.clearRect(
+      0,
+      0,
+      dimensionsRef.current.width,
+      dimensionsRef.current.height
+    );
+
+    // Draw score
+    ctx.fillStyle = forceWhiteBackground ? "#000000" : "#ffffff";
+    ctx.font = "24px monospace";
+    ctx.fillText(`Score: ${score}`, 20, 40);
+
+    // Draw asteroids
+    ctx.strokeStyle = forceWhiteBackground ? "#000000" : "#4a9eff";
+    ctx.lineWidth = 1.5;
+    for (const asteroid of particlesRef.current) {
+      ctx.save();
+      ctx.translate(asteroid.x, asteroid.y);
+      ctx.rotate(asteroid.rotation);
+      ctx.beginPath();
+      for (let i = 0; i < asteroid.points.length; i += 2) {
+        const x = asteroid.points[i];
+        const y = asteroid.points[i + 1];
+        if (i === 0) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
+      }
+      ctx.closePath();
+      ctx.stroke();
+      ctx.restore();
+    }
+
+    // Draw projectiles
+    ctx.fillStyle = forceWhiteBackground ? "#000000" : "#4a9eff";
+    for (const projectile of projectilesRef.current) {
+      ctx.beginPath();
+      ctx.arc(projectile.x, projectile.y, 2, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    // Draw ship
+    const ship = shipRef.current;
+    ctx.save();
+    ctx.translate(ship.x, ship.y);
+    ctx.rotate(ship.angle);
+    ctx.strokeStyle = forceWhiteBackground ? "#000000" : "#4a9eff";
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(15, 0);
+    ctx.lineTo(-10, -10);
+    ctx.lineTo(-8, 0);
+    ctx.lineTo(-10, 10);
+    ctx.closePath();
+    ctx.stroke();
+
+    // Draw engine thrust
+    if (ship.thrusting) {
+      ctx.beginPath();
+      ctx.fillStyle = forceWhiteBackground ? "#000000" : "#4a9eff";
+      ctx.globalAlpha = 0.5;
+      ctx.moveTo(-8, 0);
+      ctx.lineTo(-15, -5);
+      ctx.lineTo(-20, 0);
+      ctx.lineTo(-15, 5);
+      ctx.closePath();
+      ctx.fill();
+      ctx.globalAlpha = 1;
+    }
+    ctx.restore();
+
+    // Draw game over screen
+    if (gameOver) {
+      ctx.fillStyle = "rgba(0,0,0,0.8)";
+      ctx.fillRect(
+        dimensionsRef.current.width / 2 - 150,
+        dimensionsRef.current.height / 2 - 60,
+        300,
+        120
+      );
+
+      ctx.fillStyle = "#ffffff";
+      ctx.font = "32px monospace";
+      ctx.textAlign = "center";
+      ctx.fillText(
+        "GAME OVER",
+        dimensionsRef.current.width / 2,
+        dimensionsRef.current.height / 2 - 20
+      );
+
+      ctx.font = "16px monospace";
+      ctx.fillText(
+        "Press ENTER to restart",
+        dimensionsRef.current.width / 2,
+        dimensionsRef.current.height / 2 + 20
+      );
+      ctx.textAlign = "left";
+    }
+  }, [forceWhiteBackground, gameOver, score]);
+
+  const animate = useCallback(
+    (timestamp: number) => {
+      const deltaTime = lastFrameTimeRef.current
+        ? Math.min((timestamp - lastFrameTimeRef.current) / 16.667, 3)
+        : 1;
+      lastFrameTimeRef.current = timestamp;
+
+      updateParticles(deltaTime);
+      updateShip(deltaTime);
+      updateProjectiles(deltaTime);
+      checkCollisions();
+      draw();
+
+      frameRef.current = requestAnimationFrame(animate);
+    },
+    [updateParticles, updateShip, updateProjectiles, checkCollisions, draw]
+  );
+
+  const resetGame = useCallback(() => {
+    setScore(0);
+    setGameOver(false);
+    shipRef.current = {
+      x: dimensionsRef.current.width / 2,
+      y: dimensionsRef.current.height / 2,
+      angle: 0,
+      velocityX: 0,
+      velocityY: 0,
+      rotationSpeed: 0.1,
+      thrusting: false,
+      lastShot: 0,
+    };
+    projectilesRef.current = [];
+    initializeParticles();
+  }, [initializeParticles]);
+
+  const handleKeyDown = useCallback(
+    (e: KeyboardEvent) => {
+      keysRef.current[e.key] = true;
+      if (e.key === " " && !gameOver) {
+        const now = Date.now();
+        if (now - shipRef.current.lastShot > 250) {
+          projectilesRef.current.push(createProjectile(shipRef.current));
+          shipRef.current.lastShot = now;
+        }
+      }
+      if (e.key === "f" && !gameOver) {
+        onFire?.((prev) => !prev);
+      }
+      if (e.key === "Enter" && gameOver) {
+        resetGame();
+      }
+    },
+    [gameOver, createProjectile, resetGame, onFire]
+  );
+
+  const handleKeyUp = useCallback((e: KeyboardEvent) => {
+    keysRef.current[e.key] = false;
+  }, []);
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    const updateDimensions = () => {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+      dimensionsRef.current = { width: canvas.width, height: canvas.height };
+
+      // Reset ship position
+      shipRef.current.x = canvas.width / 2;
+      shipRef.current.y = canvas.height / 2;
+
+      // Reinitialize particles
+      initializeParticles();
+    };
+
+    contextRef.current = canvas.getContext("2d");
+    updateDimensions();
+
+    window.addEventListener("resize", updateDimensions);
+    window.addEventListener("keydown", handleKeyDown);
+    window.addEventListener("keyup", handleKeyUp);
+    frameRef.current = requestAnimationFrame(animate);
+
+    return () => {
+      window.removeEventListener("resize", updateDimensions);
+      window.removeEventListener("keydown", handleKeyDown);
+      window.removeEventListener("keyup", handleKeyUp);
+      cancelAnimationFrame(frameRef.current);
+    };
+  }, [animate, handleKeyDown, handleKeyUp, initializeParticles]);
+
   return (
-    <div className="fixed inset-0 z-0">
-      <svg
-        ref={svgRef}
-        className="w-full h-full"
-        style={{
-          background: forceWhiteBackground
-            ? "white"
-            : "radial-gradient(circle, #000033 0%, #000000 100%)",
-        }}
-      >
-        <defs>
-          <filter id="glow">
-            <feGaussianBlur stdDeviation="2" result="coloredBlur" />
-            <feMerge>
-              <feMergeNode in="coloredBlur" />
-              <feMergeNode in="SourceGraphic" />
-            </feMerge>
-          </filter>
-          <radialGradient id="engineGlow" cx="0.5" cy="0.5" r="0.5">
-            <stop
-              offset="0%"
-              stopColor={forceWhiteBackground ? "#000000" : "#4a9eff"}
-              stopOpacity="1"
-            />
-            <stop
-              offset="100%"
-              stopColor={forceWhiteBackground ? "#000000" : "#4a9eff"}
-              stopOpacity="0"
-            />
-          </radialGradient>
-        </defs>
-
-        {/* Stars with parallax effect */}
-        {Array.from({ length: 100 }).map((_, i) => (
-          <circle
-            key={`star-${i}`}
-            cx={Math.random() * 100 + "%"}
-            cy={Math.random() * 100 + "%"}
-            r={Math.random() * 1.5 + 0.5}
-            fill={forceWhiteBackground ? "#000000" : "#ffffff"}
-            opacity={Math.random() * 0.5 + 0.25}
-          >
-            <animate
-              attributeName="opacity"
-              values={`${Math.random() * 0.5 + 0.25};${Math.random() * 0.1 + 0.1};${Math.random() * 0.5 + 0.25}`}
-              dur={`${Math.random() * 3 + 2}s`}
-              repeatCount="indefinite"
-            />
-          </circle>
-        ))}
-
-        {/* Projectiles */}
-        {projectilesRef.current.map((p, i) => (
-          <circle
-            key={`projectile-${i}`}
-            cx={p.x}
-            cy={p.y}
-            r={3}
-            fill={forceWhiteBackground ? "#000000" : "#4a9eff"}
-            filter="url(#glow)"
-            opacity={0.8}
-          >
-            <animate
-              attributeName="r"
-              values="3;2;3"
-              dur="0.5s"
-              repeatCount="indefinite"
-            />
-          </circle>
-        ))}
-
-        {/* Ship with engine glow */}
-        <g
-          filter="url(#glow)"
-          transform={`rotate(${shipRef.current.angle * (180 / Math.PI)}, ${shipRef.current.x}, ${shipRef.current.y})`}
-        >
-          {/* Engine glow */}
-          <circle
-            cx={shipRef.current.x - 12}
-            cy={shipRef.current.y}
-            r="8"
-            fill="url(#engineGlow)"
-            opacity={shipRef.current.engineGlow}
-          />
-          {/* Ship body */}
-          <path
-            d={`M ${shipRef.current.x + 15},${shipRef.current.y} 
-                L ${shipRef.current.x - 10},${shipRef.current.y - 10} 
-                L ${shipRef.current.x - 8},${shipRef.current.y} 
-                L ${shipRef.current.x - 10},${shipRef.current.y + 10} Z`}
-            fill="none"
-            stroke={forceWhiteBackground ? "#000000" : "#4a9eff"}
-            strokeWidth="2"
-          />
-        </g>
-
-        {/* Particles */}
-        {particlesRef.current.map((p, i) => (
-          <g key={i} filter="url(#glow)">
-            <path
-              d={`M ${p.points.reduce((path, point, i) => {
-                const command = i === 0 ? "M" : "L";
-                const x = p.x + point;
-                const y = p.y + p.points[i + 1];
-                return i % 2 === 0 ? `${path} ${command}${x},${y}` : path;
-              }, "")} Z`}
-              fill="none"
-              stroke={
-                p.type === "geometric"
-                  ? forceWhiteBackground
-                    ? "#000000"
-                    : "#ff00ff"
-                  : forceWhiteBackground
-                    ? "#000000"
-                    : "#4a9eff"
-              }
-              strokeWidth={p.type === "geometric" ? "2" : "1.5"}
-              opacity={p.type === "geometric" ? "0.4" : "0.6"}
-              transform={`rotate(${p.rotation * (180 / Math.PI)}, ${p.x}, ${p.y})`}
-            >
-              <animate
-                attributeName="stroke-dashoffset"
-                values="0;30;0"
-                dur={`${p.type === "geometric" ? 8 : 4}s`}
-                repeatCount="indefinite"
-              />
-            </path>
-          </g>
-        ))}
-      </svg>
+    <div
+      className="fixed inset-0 z-10"
+      tabIndex={0}
+      style={{ touchAction: "none" }}
+    >
+      <canvas
+        ref={canvasRef}
+        className={`w-full h-full ${forceWhiteBackground ? "bg-white" : "bg-transparent"}`}
+      />
     </div>
   );
 }

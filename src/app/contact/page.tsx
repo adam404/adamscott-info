@@ -235,6 +235,7 @@ export default function ContactPage() {
                     onChange={(e) =>
                       setFormData({ ...formData, name: e.target.value })
                     }
+                    placeholder="Enter your name"
                   />
                 </div>
 
@@ -254,6 +255,7 @@ export default function ContactPage() {
                     onChange={(e) =>
                       setFormData({ ...formData, email: e.target.value })
                     }
+                    placeholder="Enter your email address"
                   />
                 </div>
 
@@ -273,6 +275,7 @@ export default function ContactPage() {
                     onChange={(e) =>
                       setFormData({ ...formData, message: e.target.value })
                     }
+                    placeholder="How can I help you?"
                   />
                 </div>
 

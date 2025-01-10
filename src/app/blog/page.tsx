@@ -3,8 +3,27 @@ import Card from "@/components/Card";
 import Footer from "@/components/Footer";
 import { getAllPosts } from "@/lib/content";
 import ClientBlog from "@/components/blog/ClientBlog";
+import { Metadata } from "next";
 
 export const revalidate = 3600; // Revalidate every hour
+
+export const metadata: Metadata = {
+  title: "Blog | Adam Scott - Software Engineer & Technical Leader",
+  description:
+    "Insights and articles about software development, cloud architecture, and technical leadership from Adam Scott.",
+  openGraph: {
+    title: "Blog | Adam Scott - Software Engineer & Technical Leader",
+    description:
+      "Insights and articles about software development, cloud architecture, and technical leadership from Adam Scott.",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Blog | Adam Scott",
+    description:
+      "Insights and articles about software development, cloud architecture, and technical leadership from Adam Scott.",
+  },
+};
 
 export default async function Blog() {
   const posts = await getAllPosts();
