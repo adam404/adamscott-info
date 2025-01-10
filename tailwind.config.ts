@@ -52,6 +52,23 @@ const config: Config = {
         md: "calc(var(--radius) - 2px)",
         sm: "calc(var(--radius) - 4px)",
       },
+      keyframes: {
+        float: {
+          "0%, 100%": { transform: "translateY(0) rotate(0)" },
+          "50%": { transform: "translateY(-100px) rotate(180deg)" },
+        },
+        "gradient-shift": {
+          "0%, 100%": { backgroundPosition: "0% 50%" },
+          "50%": { backgroundPosition: "100% 50%" },
+        },
+      },
+      animation: {
+        float: "float 10s ease-in-out infinite",
+        "gradient-shift": "gradient-shift 15s ease infinite",
+      },
+      backgroundSize: {
+        "200%": "200% 200%",
+      },
     },
   },
   plugins: [require("@tailwindcss/typography")],

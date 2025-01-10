@@ -149,3 +149,9 @@ table {
 .prose .callout > p {
   margin: 0 !important;
 } 
+
+.hero {
+  background-image: url('/hero-bg.svg');
+  background-size: cover;
+  background-position: center;
+}

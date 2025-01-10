@@ -1,0 +1,190 @@
+<svg width="1920" height="1080" viewBox="0 0 1920 1080"
+     xmlns="http://www.w3.org/2000/svg"
+     xmlns:xlink="http://www.w3.org/1999/xlink"
+     version="1.1">
+  <defs>
+    <!-- Updated gradient with 80s cyber colors -->
+    <linearGradient id="bg-gradient" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#ff00ff">
+        <animate
+          attributeName="stop-color"
+          values="#ff00ff;#ff1a8c;#ff00ff"
+          dur="8s"
+          repeatCount="indefinite"/>
+      </stop>
+      <stop offset="100%" stop-color="#00ffff">
+        <animate
+          attributeName="stop-color"
+          values="#00ffff;#00ccff;#00ffff"
+          dur="8s"
+          repeatCount="indefinite"/>
+      </stop>
+    </linearGradient>
+
+    <!-- Grid pattern -->
+    <pattern id="grid" x="0" y="0" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#ff00ff" stroke-width="0.5" opacity="0.2">
+        <animate
+          attributeName="stroke-dasharray"
+          values="0,43;43,0"
+          dur="3s"
+          repeatCount="indefinite"/>
+      </path>
+    </pattern>
+
+    <!-- Particle effect -->
+    <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="2" result="blur"/>
+      <feColorMatrix in="blur" type="matrix" values="
+        1 0 0 0 0
+        0 1 0 0 0
+        0 0 1 0 0
+        0 0 0 15 -5" result="glow"/>
+      <feMerge>
+        <feMergeNode in="glow"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  
+  <!-- Background rectangle with gradient -->
+  <rect x="0" y="0" width="1920" height="1080" fill="url(#bg-gradient)" opacity="0.15"/>
+  
+  <!-- Grid overlay with pulse -->
+  <rect x="0" y="0" width="1920" height="1080" fill="url(#grid)">
+    <animate
+      attributeName="opacity"
+      values="0.2;0.3;0.2"
+      dur="4s"
+      repeatCount="indefinite"/>
+  </rect>
+  
+  <!-- Floating particles -->
+  <g filter="url(#glow)">
+    <circle cx="200" cy="200" r="3" fill="#ff00ff" opacity="0.6">
+      <animate
+        attributeName="cy"
+        values="200;180;200"
+        dur="3s"
+        repeatCount="indefinite"/>
+      <animate
+        attributeName="cx"
+        values="200;220;200"
+        dur="4s"
+        repeatCount="indefinite"/>
+    </circle>
+    <circle cx="1720" cy="300" r="2" fill="#00ffff" opacity="0.6">
+      <animate
+        attributeName="cy"
+        values="300;280;300"
+        dur="4s"
+        repeatCount="indefinite"/>
+      <animate
+        attributeName="cx"
+        values="1720;1700;1720"
+        dur="3s"
+        repeatCount="indefinite"/>
+    </circle>
+  </g>
+
+  <!-- Animated circle (top-right) -->
+  <circle id="circle1" cx="1560" cy="180" r="120"
+          fill="none"
+          stroke="#ff00ff"
+          stroke-width="3"
+          opacity="0.6"
+          stroke-dasharray="0,20">
+    <animate
+      attributeName="r"
+      values="120;140;120"
+      dur="4s"
+      repeatCount="indefinite"/>
+    <animate
+      attributeName="stroke-dasharray"
+      values="0,20;20,0;0,20"
+      dur="8s"
+      repeatCount="indefinite"/>
+    <animateTransform
+      attributeName="transform"
+      type="rotate"
+      from="0 1560 180"
+      to="360 1560 180"
+      dur="20s"
+      repeatCount="indefinite"/>
+  </circle>
+  
+  <!-- Floating triangle with glow -->
+  <g filter="url(#glow)">
+    <polygon points="288,936 144,1044 432,1044"
+             fill="none"
+             stroke="#00ffff"
+             stroke-width="3"
+             opacity="0.6">
+      <animate
+        attributeName="transform"
+        type="translate"
+        values="0,0; 0,-20; 0,0"
+        dur="3s"
+        repeatCount="indefinite"/>
+      <animate
+        attributeName="stroke-dasharray"
+        values="0,1000;1000,0;0,1000"
+        dur="8s"
+        repeatCount="indefinite"/>
+    </polygon>
+  </g>
+
+  <!-- Pulse rings -->
+  <g opacity="0.3">
+    <circle cx="960" cy="540" r="5" fill="#ff00ff">
+      <animate
+        attributeName="r"
+        values="5;100;5"
+        dur="4s"
+        repeatCount="indefinite"/>
+      <animate
+        attributeName="opacity"
+        values="0.3;0;0.3"
+        dur="4s"
+        repeatCount="indefinite"/>
+    </circle>
+    <circle cx="960" cy="540" r="5" fill="#00ffff">
+      <animate
+        attributeName="r"
+        values="5;80;5"
+        dur="4s"
+        begin="2s"
+        repeatCount="indefinite"/>
+      <animate
+        attributeName="opacity"
+        values="0.3;0;0.3"
+        dur="4s"
+        begin="2s"
+        repeatCount="indefinite"/>
+    </circle>
+  </g>
+
+  <!-- Scanning line with glow -->
+  <g filter="url(#glow)">
+    <line x1="0" y1="0" x2="1920" y2="0" 
+          stroke="#00ffff" 
+          stroke-width="4" 
+          opacity="0.2">
+      <animate
+        attributeName="y1"
+        values="0;1080;0"
+        dur="10s"
+        repeatCount="indefinite"/>
+      <animate
+        attributeName="y2"
+        values="0;1080;0"
+        dur="10s"
+        repeatCount="indefinite"/>
+      <animate
+        attributeName="opacity"
+        values="0.2;0.4;0.2"
+        dur="10s"
+        repeatCount="indefinite"/>
+    </line>
+  </g>
+</svg> 

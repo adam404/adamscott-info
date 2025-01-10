@@ -8,7 +8,7 @@ import ProjectVideo from "./ProjectVideo";
 interface CardProps {
   title: string;
   description: string;
-  image: string;
+  image?: string;
   video?: string;
   link: string;
   date?: string;
@@ -35,7 +35,7 @@ export default function Card({
         <Link href={link} aria-label={`View ${title}`}>
           {type === "project" ? (
             <ProjectVideo video={video} image={image} title={title} />
-          ) : (
+          ) : image ? (
             <Image
               className="h-48 w-full object-cover transition-transform hover:scale-105"
               src={image}
@@ -43,6 +43,10 @@ export default function Card({
               width={500}
               height={300}
             />
+          ) : (
+            <div className="h-48 w-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center">
+              <span className="text-gray-500 dark:text-gray-400">{title}</span>
+            </div>
           )}
         </Link>
       </div>

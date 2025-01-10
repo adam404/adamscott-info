@@ -18,6 +18,27 @@ export const metadata: Metadata = {
   title: "Adam Scott - Software Engineer & Technical Leader",
   description:
     "Personal portfolio and blog of Adam Scott, a software engineer and technical leader specializing in web development and cloud architecture.",
+  icons: {
+    icon: [
+      {
+        url: "/favicon-32x32.png",
+        sizes: "32x32",
+        type: "image/png",
+      },
+      {
+        url: "/favicon-192x192.png",
+        sizes: "192x192",
+        type: "image/png",
+      },
+    ],
+    apple: [
+      {
+        url: "/favicon-180x180.png",
+        sizes: "180x180",
+        type: "image/png",
+      },
+    ],
+  },
   openGraph: {
     title: "Adam Scott - Software Engineer & Technical Leader",
     description:
@@ -59,7 +80,6 @@ export default function RootLayout({
       className={`${GeistSans.variable} ${GeistMono.variable} ${alata.variable}`}
     >
       <body className={alata.className}>
-        <Navigation />
         <main>{children}</main>
         <Analytics />
       </body>

@@ -3,7 +3,7 @@ import Image from "next/image";
 
 interface ProjectVideoProps {
   video?: string;
-  image: string;
+  image?: string;
   title: string;
 }
 
@@ -48,7 +48,7 @@ export default function ProjectVideo({
   }, [video]);
 
   if (!video || !canPlayVideo) {
-    return (
+    return image ? (
       <Image
         className="h-48 w-full object-cover transition-transform hover:scale-105"
         src={image}
@@ -57,13 +57,17 @@ export default function ProjectVideo({
         height={300}
         priority
       />
+    ) : (
+      <div className="h-48 w-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center">
+        <span className="text-gray-500 dark:text-gray-400">{title}</span>
+      </div>
     );
   }
 
   return (
     <video
       ref={videoRef}
-      className="h-48 w-full object-cover transition-transform hover:scale-105"
+      className="w-full object-cover transition-transform hover:scale-105"
       autoPlay
       muted
       loop
@@ -71,14 +75,16 @@ export default function ProjectVideo({
       poster={image}
     >
       <source src={video} type="video/mp4" />
-      <Image
-        className="h-48 w-full object-cover"
-        src={image}
-        alt={`Cover image for ${title}`}
-        width={500}
-        height={300}
-        priority
-      />
+      {image && (
+        <Image
+          className="h-48 w-full object-cover"
+          src={image}
+          alt={`Cover image for ${title}`}
+          width={500}
+          height={300}
+          priority
+        />
+      )}
     </video>
   );
 }

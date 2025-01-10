@@ -3,12 +3,12 @@ const path = require("path");
 const matter = require("gray-matter");
 const { createCanvas } = require("canvas");
 
-async function generatePlaceholder(imagePath, text) {
+async function generatePlaceholder(imagePath, text, type = "project") {
   const canvas = createCanvas(1200, 630);
   const ctx = canvas.getContext("2d");
 
-  // Fill background
-  ctx.fillStyle = "#1e293b";
+  // Fill background with different colors for projects vs blog
+  ctx.fillStyle = type === "project" ? "#1e293b" : "#312e81";
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 
   // Add text
@@ -41,40 +41,62 @@ async function generatePlaceholder(imagePath, text) {
     ctx.fillText(line, canvas.width / 2, startY + i * lineHeight);
   });
 
+  // Add type label
+  ctx.font = "bold 24px -apple-system, system-ui, sans-serif";
+  ctx.fillText(type.toUpperCase(), canvas.width / 2, canvas.height - 40);
+
+  // Ensure the directory exists
+  const dir = path.dirname(path.join(process.cwd(), "public", imagePath));
+  await fs.mkdir(dir, { recursive: true });
+
   // Save the image
   const buffer = canvas.toBuffer("image/png");
   await fs.writeFile(path.join(process.cwd(), "public", imagePath), buffer);
 }
 
-async function main() {
-  // Read all project files
-  const projectsDir = path.join(process.cwd(), "src/content/projects");
-  const files = await fs.readdir(projectsDir);
+async function processContent(contentDir, type) {
+  const files = await fs.readdir(contentDir);
 
   for (const file of files) {
     if (!file.endsWith(".mdx")) continue;
 
-    const content = await fs.readFile(path.join(projectsDir, file), "utf8");
+    const content = await fs.readFile(path.join(contentDir, file), "utf8");
     const { data } = matter(content);
 
-    if (!data.image) continue;
+    // For blog posts, check both featuredImage and image fields
+    const imagePath =
+      type === "blog" ? data.featuredImage || data.image : data.image;
+
+    if (!imagePath) continue;
 
     // Remove leading slash if present
-    const imagePath = data.image.startsWith("/")
-      ? data.image.slice(1)
-      : data.image;
+    const cleanImagePath = imagePath.startsWith("/")
+      ? imagePath.slice(1)
+      : imagePath;
 
     try {
       // Check if image already exists
-      await fs.access(path.join(process.cwd(), "public", imagePath));
-      console.log(`✓ Image exists: ${imagePath}`);
+      await fs.access(path.join(process.cwd(), "public", cleanImagePath));
+      console.log(`✓ Image exists: ${cleanImagePath}`);
     } catch (error) {
       // Image doesn't exist, generate placeholder
-      console.log(`Generating placeholder for: ${imagePath}`);
-      await generatePlaceholder(imagePath, data.title);
-      console.log(`✓ Generated: ${imagePath}`);
+      console.log(`Generating placeholder for: ${cleanImagePath}`);
+      await generatePlaceholder(cleanImagePath, data.title, type);
+      console.log(`✓ Generated: ${cleanImagePath}`);
     }
   }
+}
+
+async function main() {
+  // Process projects
+  const projectsDir = path.join(process.cwd(), "src/content/projects");
+  console.log("\nProcessing projects...");
+  await processContent(projectsDir, "project");
+
+  // Process blog articles
+  const blogDir = path.join(process.cwd(), "src/content/blog");
+  console.log("\nProcessing blog articles...");
+  await processContent(blogDir, "blog");
 }
 
 main().catch(console.error);

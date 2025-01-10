@@ -64,12 +64,7 @@ export default function ClientBlog({
       <div className="mx-auto mt-16 max-w-7xl px-6 lg:px-8">
         <div className="mx-auto grid max-w-2xl grid-cols-1 gap-x-8 gap-y-20 lg:mx-0 lg:max-w-none lg:grid-cols-3">
           {filteredPosts.map((post) => (
-            <Card
-              key={post.title}
-              {...post}
-              link={`/blog/${post.slug}`}
-              type="post"
-            />
+            <Card key={post.title} {...post} link={post.slug} type="post" />
           ))}
         </div>
       </div>
