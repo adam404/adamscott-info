@@ -4,6 +4,10 @@ import { GeistMono } from "geist/font/mono";
 import { Alata } from "next/font/google";
 import { Analytics } from "@vercel/analytics/react";
 import Navigation from "@/components/Navigation";
+import {
+  GoogleTagManagerScript,
+  GoogleTagManagerNoScript,
+} from "@/components/GoogleTagManager";
 import "./globals.css";
 import "../styles/prism.css";
 
@@ -79,7 +83,11 @@ export default function RootLayout({
       lang="en"
       className={`${GeistSans.variable} ${GeistMono.variable} ${alata.variable}`}
     >
+      <head>
+        <GoogleTagManagerScript />
+      </head>
       <body className={alata.className}>
+        <GoogleTagManagerNoScript />
         <main>{children}</main>
         <Analytics />
       </body>
