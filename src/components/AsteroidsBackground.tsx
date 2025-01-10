@@ -45,7 +45,6 @@ export default function AsteroidsBackground({
   onFire,
 }: Props) {
   const [score, setScore] = useState(0);
-  const [gameOver, setGameOver] = useState(false);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const contextRef = useRef<CanvasRenderingContext2D | null>(null);
   const dimensionsRef = useRef({
@@ -147,39 +146,34 @@ export default function AsteroidsBackground({
     });
   }, []);
 
-  const updateShip = useCallback(
-    (deltaTime: number) => {
-      if (gameOver) return;
+  const updateShip = useCallback((deltaTime: number) => {
+    const ship = shipRef.current;
+    const thrust = 0.3 * deltaTime;
+    const friction = Math.pow(0.99, deltaTime);
 
-      const ship = shipRef.current;
-      const thrust = 0.3 * deltaTime;
-      const friction = Math.pow(0.99, deltaTime);
+    if (keysRef.current["ArrowLeft"])
+      ship.angle -= ship.rotationSpeed * deltaTime;
+    if (keysRef.current["ArrowRight"])
+      ship.angle += ship.rotationSpeed * deltaTime;
 
-      if (keysRef.current["ArrowLeft"])
-        ship.angle -= ship.rotationSpeed * deltaTime;
-      if (keysRef.current["ArrowRight"])
-        ship.angle += ship.rotationSpeed * deltaTime;
+    ship.thrusting = keysRef.current["ArrowUp"];
+    if (ship.thrusting) {
+      ship.velocityX += Math.cos(ship.angle) * thrust;
+      ship.velocityY += Math.sin(ship.angle) * thrust;
+    }
 
-      ship.thrusting = keysRef.current["ArrowUp"];
-      if (ship.thrusting) {
-        ship.velocityX += Math.cos(ship.angle) * thrust;
-        ship.velocityY += Math.sin(ship.angle) * thrust;
-      }
+    ship.velocityX *= friction;
+    ship.velocityY *= friction;
 
-      ship.velocityX *= friction;
-      ship.velocityY *= friction;
+    ship.x += ship.velocityX * deltaTime;
+    ship.y += ship.velocityY * deltaTime;
 
-      ship.x += ship.velocityX * deltaTime;
-      ship.y += ship.velocityY * deltaTime;
-
-      const { width, height } = dimensionsRef.current;
-      if (ship.x < 0) ship.x = width;
-      else if (ship.x > width) ship.x = 0;
-      if (ship.y < 0) ship.y = height;
-      else if (ship.y > height) ship.y = 0;
-    },
-    [gameOver]
-  );
+    const { width, height } = dimensionsRef.current;
+    if (ship.x < 0) ship.x = width;
+    else if (ship.x > width) ship.x = 0;
+    if (ship.y < 0) ship.y = height;
+    else if (ship.y > height) ship.y = 0;
+  }, []);
 
   const createProjectile = useCallback(
     (ship: Ship): Projectile => ({
@@ -204,8 +198,6 @@ export default function AsteroidsBackground({
   }, []);
 
   const checkCollisions = useCallback(() => {
-    if (gameOver) return;
-
     const ship = shipRef.current;
     const shipRadius = 10;
     let asteroidsToAdd: Particle[] = [];
@@ -227,14 +219,6 @@ export default function AsteroidsBackground({
           const pMinDistance = particle.size * 0.8;
 
           if (pDistanceSquared < pMinDistance * pMinDistance) {
-            console.log("=== ASTEROID COLLISION EVENT ===");
-            console.log("Original asteroid:", {
-              id: i,
-              size: particle.size,
-              position: { x: particle.x, y: particle.y },
-              immune: particle.immuneUntil ? particle.immuneUntil > now : false,
-            });
-
             // Remove the projectile immediately to prevent multiple hits
             projectilesRef.current.splice(j, 1);
 
@@ -270,17 +254,6 @@ export default function AsteroidsBackground({
                 ),
               ];
 
-              console.log(
-                "Created new asteroids:",
-                newAsteroids.map((a, idx) => ({
-                  id: `new_${idx}`,
-                  size: a.size,
-                  position: { x: a.x, y: a.y },
-                  immune: a.immuneUntil ? a.immuneUntil > now : false,
-                  immuneUntil: a.immuneUntil,
-                }))
-              );
-
               // Adjust velocities for more dynamic movement with increased spread
               newAsteroids.forEach((asteroid, index) => {
                 const spreadAngle = Math.PI * 0.75; // Increased to 135 degrees for more separation
@@ -303,8 +276,6 @@ export default function AsteroidsBackground({
 
             // Remove the original asteroid
             particlesRef.current.splice(i, 1);
-            console.log("Current asteroid count:", particlesRef.current.length);
-            console.log("Asteroids to add:", asteroidsToAdd.length);
             setScore((prev) => prev + 100);
             break outerLoop; // Exit both loops after hit
           }
@@ -314,9 +285,7 @@ export default function AsteroidsBackground({
 
     // Add new asteroids after all collision checks
     if (asteroidsToAdd.length > 0) {
-      console.log("Adding new asteroids to game:", asteroidsToAdd.length);
       particlesRef.current.push(...asteroidsToAdd);
-      console.log("New total asteroid count:", particlesRef.current.length);
     }
 
     // Then check ship collisions with remaining asteroids
@@ -331,15 +300,13 @@ export default function AsteroidsBackground({
         const minDistance = shipRadius + particle.size * 0.7;
 
         if (distanceSquared < minDistance * minDistance) {
-          console.log("Ship collision with asteroid:", {
-            asteroidSize: particle.size,
-            asteroidPosition: { x: particle.x, y: particle.y },
-            shipPosition: { x: ship.x, y: ship.y },
-            distance: Math.sqrt(distanceSquared),
-            minDistance,
-            immune: particle.immuneUntil ? particle.immuneUntil > now : false,
-          });
-          setGameOver(true);
+          // Reset ship position on collision
+          ship.x = dimensionsRef.current.width / 2;
+          ship.y = dimensionsRef.current.height / 2;
+          ship.velocityX = 0;
+          ship.velocityY = 0;
+          ship.angle = 0;
+          setScore(0);
           return;
         }
       }
@@ -375,7 +342,7 @@ export default function AsteroidsBackground({
 
       particlesRef.current.push(createAsteroid(x, y, size));
     }
-  }, [gameOver, createAsteroid]);
+  }, [createAsteroid]);
 
   const draw = useCallback(() => {
     const ctx = contextRef.current;
@@ -450,35 +417,7 @@ export default function AsteroidsBackground({
       ctx.globalAlpha = 1;
     }
     ctx.restore();
-
-    // Draw game over screen
-    if (gameOver) {
-      ctx.fillStyle = "rgba(0,0,0,0.8)";
-      ctx.fillRect(
-        dimensionsRef.current.width / 2 - 150,
-        dimensionsRef.current.height / 2 - 60,
-        300,
-        120
-      );
-
-      ctx.fillStyle = "#ffffff";
-      ctx.font = "32px monospace";
-      ctx.textAlign = "center";
-      ctx.fillText(
-        "GAME OVER",
-        dimensionsRef.current.width / 2,
-        dimensionsRef.current.height / 2 - 20
-      );
-
-      ctx.font = "16px monospace";
-      ctx.fillText(
-        "Press ENTER to restart",
-        dimensionsRef.current.width / 2,
-        dimensionsRef.current.height / 2 + 20
-      );
-      ctx.textAlign = "left";
-    }
-  }, [forceWhiteBackground, gameOver, score]);
+  }, [forceWhiteBackground, score]);
 
   const animate = useCallback(
     (timestamp: number) => {
@@ -499,8 +438,6 @@ export default function AsteroidsBackground({
   );
 
   const resetGame = useCallback(() => {
-    setScore(0);
-    setGameOver(false);
     shipRef.current = {
       x: dimensionsRef.current.width / 2,
       y: dimensionsRef.current.height / 2,
@@ -518,21 +455,18 @@ export default function AsteroidsBackground({
   const handleKeyDown = useCallback(
     (e: KeyboardEvent) => {
       keysRef.current[e.key] = true;
-      if (e.key === " " && !gameOver) {
+      if (e.key === " ") {
         const now = Date.now();
         if (now - shipRef.current.lastShot > 250) {
           projectilesRef.current.push(createProjectile(shipRef.current));
           shipRef.current.lastShot = now;
         }
       }
-      if (e.key === "f" && !gameOver) {
+      if (e.key === "f") {
         onFire?.((prev) => !prev);
       }
-      if (e.key === "Enter" && gameOver) {
-        resetGame();
-      }
     },
-    [gameOver, createProjectile, resetGame, onFire]
+    [createProjectile, onFire]
   );
 
   const handleKeyUp = useCallback((e: KeyboardEvent) => {
