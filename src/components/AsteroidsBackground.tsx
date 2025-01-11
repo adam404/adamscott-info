@@ -490,31 +490,38 @@ export default function AsteroidsBackground({
       initializeParticles();
     };
 
+    const handleCanvasClick = () => {
+      onFire?.((prev) => !prev);
+    };
+
     contextRef.current = canvas.getContext("2d");
     updateDimensions();
 
     window.addEventListener("resize", updateDimensions);
     window.addEventListener("keydown", handleKeyDown);
     window.addEventListener("keyup", handleKeyUp);
+    canvas.addEventListener("click", handleCanvasClick);
     frameRef.current = requestAnimationFrame(animate);
 
     return () => {
       window.removeEventListener("resize", updateDimensions);
       window.removeEventListener("keydown", handleKeyDown);
       window.removeEventListener("keyup", handleKeyUp);
+      canvas.removeEventListener("click", handleCanvasClick);
       cancelAnimationFrame(frameRef.current);
     };
-  }, [animate, handleKeyDown, handleKeyUp, initializeParticles]);
+  }, [animate, handleKeyDown, handleKeyUp, initializeParticles, onFire]);
 
   return (
     <div
-      className="fixed inset-0 z-10"
+      className="fixed inset-0 z-0 pointer-events-auto"
       tabIndex={0}
       style={{ touchAction: "none" }}
     >
       <canvas
         ref={canvasRef}
         className={`w-full h-full ${forceWhiteBackground ? "bg-white" : "bg-transparent"}`}
+        style={{ pointerEvents: "all" }}
       />
     </div>
   );
