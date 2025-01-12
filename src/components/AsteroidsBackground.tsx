@@ -473,6 +473,16 @@ export default function AsteroidsBackground({
     keysRef.current[e.key] = false;
   }, []);
 
+  const handleClick = useCallback(
+    (e: MouseEvent) => {
+      if (e.target === canvasRef.current) {
+        e.stopPropagation();
+        onFire?.((prev) => !prev);
+      }
+    },
+    [onFire]
+  );
+
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -490,38 +500,37 @@ export default function AsteroidsBackground({
       initializeParticles();
     };
 
-    const handleCanvasClick = () => {
-      onFire?.((prev) => !prev);
-    };
-
     contextRef.current = canvas.getContext("2d");
     updateDimensions();
 
     window.addEventListener("resize", updateDimensions);
     window.addEventListener("keydown", handleKeyDown);
     window.addEventListener("keyup", handleKeyUp);
-    canvas.addEventListener("click", handleCanvasClick);
+    canvas.addEventListener("click", handleClick);
     frameRef.current = requestAnimationFrame(animate);
 
     return () => {
       window.removeEventListener("resize", updateDimensions);
       window.removeEventListener("keydown", handleKeyDown);
       window.removeEventListener("keyup", handleKeyUp);
-      canvas.removeEventListener("click", handleCanvasClick);
+      canvas.removeEventListener("click", handleClick);
       cancelAnimationFrame(frameRef.current);
     };
-  }, [animate, handleKeyDown, handleKeyUp, initializeParticles, onFire]);
+  }, [
+    animate,
+    handleKeyDown,
+    handleKeyUp,
+    initializeParticles,
+    onFire,
+    handleClick,
+  ]);
 
   return (
-    <div
-      className="fixed inset-0 z-0 pointer-events-auto"
-      tabIndex={0}
-      style={{ touchAction: "none" }}
-    >
+    <div className="fixed inset-0" tabIndex={0}>
       <canvas
         ref={canvasRef}
         className={`w-full h-full ${forceWhiteBackground ? "bg-white" : "bg-transparent"}`}
-        style={{ pointerEvents: "all" }}
+        style={{ touchAction: "auto" }}
       />
     </div>
   );
