@@ -15,7 +15,7 @@ export default async function Home() {
 
   return (
     <div className="bg-background min-h-screen font-sans">
-      <Navigation />
+      <Navigation forceWhiteBackground={false} />
       <Hero />
 
       {/* Add padding to account for fixed navigation */}
@@ -23,10 +23,10 @@ export default async function Home() {
         {/* Featured Projects Section */}
         <div className="mx-auto max-w-7xl px-6 lg:px-8 py-24 sm:py-32">
           <div className="mx-auto max-w-2xl text-center">
-            <h2 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
+            <h2 className="text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
               Featured Projects
             </h2>
-            <p className="mt-2 text-lg leading-8 text-muted-foreground">
+            <p className="mt-2 text-base leading-7 text-muted-foreground">
               A selection of my recent work and contributions.
             </p>
           </div>
@@ -53,10 +53,10 @@ export default async function Home() {
         {/* Featured Blog Posts Section */}
         <div className="mx-auto max-w-7xl px-6 lg:px-8 py-24 sm:py-32">
           <div className="mx-auto max-w-2xl text-center">
-            <h2 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
+            <h2 className="text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
               Latest Articles
             </h2>
-            <p className="mt-2 text-lg leading-8 text-muted-foreground">
+            <p className="mt-2 text-base leading-7 text-muted-foreground">
               Thoughts on software development, leadership, and technology.
             </p>
           </div>
@@ -78,10 +78,10 @@ export default async function Home() {
         {/* Skills Section */}
         <div className="mx-auto max-w-7xl px-6 lg:px-8 py-24 sm:py-32">
           <div className="mx-auto max-w-2xl text-center">
-            <h2 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
+            <h2 className="text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
               Skills & Technologies
             </h2>
-            <p className="mt-2 text-lg leading-8 text-muted-foreground">
+            <p className="mt-2 text-base leading-7 text-muted-foreground">
               The tools and technologies I work with.
             </p>
           </div>

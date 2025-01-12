@@ -113,7 +113,7 @@ export default function Navigation({
                   <Link
                     key={item.name}
                     href={item.href}
-                    className={`-mx-3 block rounded-lg px-3 py-2 text-base font-semibold leading-7 ${
+                    className={`-mx-3 block rounded-lg px-3 py-2 text-sm font-semibold leading-6 ${
                       pathname === item.href
                         ? "text-foreground bg-accent"
                         : "text-muted-foreground hover:bg-accent"

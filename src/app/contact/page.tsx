@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
+import PongBackground from "@/components/PongBackground";
 
 export default function ContactPage() {
   const [formData, setFormData] = useState({
@@ -11,6 +12,7 @@ export default function ContactPage() {
     email: "",
     message: "",
   });
+  const [showUI, setShowUI] = useState(true);
   const [status, setStatus] = useState<
     "idle" | "loading" | "success" | "error"
   >("idle");
@@ -40,11 +42,10 @@ export default function ContactPage() {
 
   return (
     <div className="bg-background min-h-screen relative isolate overflow-hidden">
-      <Navigation forceWhiteBackground />
-      <div className="min-h-screen relative overflow-hidden">
-        {/* Background - using SVG directly instead of Image component */}
+      {/* Gradient Background */}
+      <div className="absolute inset-0 z-0">
         <div
-          className="absolute inset-0 z-0"
+          className="absolute inset-0"
           dangerouslySetInnerHTML={{
             __html: `
               <svg width="100%" height="100%" viewBox="0 0 1920 1080" preserveAspectRatio="xMidYMid slice"
@@ -90,8 +91,23 @@ export default function ContactPage() {
             `,
           }}
         />
+      </div>
 
-        {/* Content */}
+      {/* Pong Background */}
+      <div className="absolute inset-0 z-[1]">
+        <PongBackground onFire={setShowUI} />
+      </div>
+
+      {/* Content */}
+      <div
+        className={`relative ${showUI ? "z-10" : "pointer-events-none opacity-0"} transition-opacity duration-300`}
+        onClick={(e) => {
+          if (e.target === e.currentTarget) {
+            setShowUI((prev) => !prev);
+          }
+        }}
+      >
+        <Navigation forceWhiteBackground />
         <div className="relative z-10 max-w-6xl mx-auto p-4 pt-32 md:pt-40 space-y-8">
           <h1 className="text-4xl md:text-5xl font-bold text-center mb-16">
             Get in Touch
@@ -290,8 +306,8 @@ export default function ContactPage() {
             </div>
           </div>
         </div>
+        <Footer />
       </div>
-      <Footer />
     </div>
   );
 }
