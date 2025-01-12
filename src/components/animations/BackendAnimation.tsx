@@ -42,8 +42,8 @@ export default function BackendAnimation({
 
     // Define animation functions within the non-null ctx scope
     const drawIsometricCube = (x: number, y: number, size: number) => {
-      // Using 30 degree angle for isometric projection
-      const h = size * 0.577; // height factor for 30 degree angle (tan(30°))
+      // Using a smaller height factor for more compact cubes
+      const h = size * 0.3; // reduced from 0.577 for shorter height
 
       ctx.strokeStyle = "rgba(50, 205, 50, 0.5)";
       ctx.lineWidth = 2;
@@ -60,8 +60,8 @@ export default function BackendAnimation({
       // Right face
       ctx.beginPath();
       ctx.moveTo(x + size, y);
-      ctx.lineTo(x + size, y + size);
-      ctx.lineTo(x + size / 2, y + size + h);
+      ctx.lineTo(x + size, y + h);
+      ctx.lineTo(x + size / 2, y + h * 2);
       ctx.lineTo(x + size / 2, y + h);
       ctx.closePath();
       ctx.stroke();
@@ -69,8 +69,8 @@ export default function BackendAnimation({
       // Left face
       ctx.beginPath();
       ctx.moveTo(x + size / 2, y + h);
-      ctx.lineTo(x + size / 2, y + size + h);
-      ctx.lineTo(x, y + size);
+      ctx.lineTo(x + size / 2, y + h * 2);
+      ctx.lineTo(x, y + h);
       ctx.lineTo(x, y);
       ctx.closePath();
       ctx.stroke();
@@ -110,13 +110,23 @@ export default function BackendAnimation({
     const animate = () => {
       ctx.clearRect(0, 0, rect.width, rect.height);
 
-      // Draw background cubes
-      for (let i = 0; i < 3; i++) {
-        const size = 40;
-        const x = rect.width * 0.25 + i * rect.width * 0.25;
-        const y = rect.height * 0.5 + Math.sin(frame * 0.02 + i) * 10;
-        drawIsometricCube(x, y, size);
-      }
+      // Draw multiple stacks of cubes
+      const stackConfigs = [
+        { x: rect.width * 0.2, baseY: rect.height * 0.4, count: 3 },
+        { x: rect.width * 0.5, baseY: rect.height * 0.6, count: 2 },
+        { x: rect.width * 0.8, baseY: rect.height * 0.5, count: 4 },
+      ];
+
+      stackConfigs.forEach((stack, stackIndex) => {
+        // Draw each cube in the stack
+        for (let i = 0; i < stack.count; i++) {
+          const size = 30; // Slightly smaller cubes
+          const x = stack.x + Math.sin(frame * 0.02 + stackIndex) * 5;
+          const y =
+            stack.baseY - i * size * 0.4 + Math.sin(frame * 0.02 + i) * 3;
+          drawIsometricCube(x, y, size);
+        }
+      });
 
       drawDataFlow();
 
