@@ -1,26 +1,9 @@
 "use client";
 
-import Link from "next/link";
-import Navigation from "@/components/Navigation";
-import Card from "@/components/Card";
-import AsteroidsBackground from "@/components/AsteroidsBackground";
-import Footer from "@/components/Footer";
-import { useState } from "react";
-
-interface ProjectFrontmatter {
-  title: string;
-  description: string;
-  date: string;
-  roles: string[];
-  tech: string[];
-  image: string;
-  video?: string;
-  featured?: boolean;
-}
-
-interface Project extends ProjectFrontmatter {
-  slug: string;
-}
+import { useCallback, useEffect, useState } from "react";
+import { useSearchParams, useRouter, usePathname } from "next/navigation";
+import { Project } from "./page";
+import ProjectVideo from "@/components/ProjectVideo";
 
 interface ProjectsClientProps {
   projects: Project[];
@@ -31,117 +14,113 @@ export default function ProjectsClient({
   projects,
   allTags,
 }: ProjectsClientProps) {
-  const [isFiring, setIsFiring] = useState(false);
-  const [selectedTag, setSelectedTag] = useState<string | null>(null);
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const currentTag = searchParams.get("tech");
 
-  const filteredProjects = selectedTag
-    ? projects.filter((project) => project.tech.includes(selectedTag))
+  const createQueryString = useCallback(
+    (name: string, value: string) => {
+      const params = new URLSearchParams(searchParams);
+      if (value) {
+        params.set(name, value);
+      } else {
+        params.delete(name);
+      }
+      return params.toString();
+    },
+    [searchParams]
+  );
+
+  const filteredProjects = currentTag
+    ? projects.filter((project) => project.tech.includes(currentTag))
     : projects;
 
+  const handleTagClick = (tag: string) => {
+    const newQueryString = createQueryString(
+      "tech",
+      currentTag === tag ? "" : tag
+    );
+    router.push(`${pathname}${newQueryString ? `?${newQueryString}` : ""}`);
+  };
+
   return (
-    <div className="min-h-screen relative bg-gray-900">
-      {/* Background */}
-      <AsteroidsBackground onFire={setIsFiring} />
+    <div className="min-h-screen bg-background py-24 sm:py-32">
+      <div className="mx-auto max-w-7xl px-6 lg:px-8">
+        <div className="mx-auto max-w-2xl text-center">
+          <h2 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
+            Projects
+          </h2>
+          <p className="mt-2 text-lg leading-8 text-muted-foreground">
+            A collection of my professional work and side projects
+          </p>
+        </div>
 
-      {/* Content */}
-      <div
-        className={`relative z-10 transition-opacity duration-300 ${isFiring ? "opacity-0" : "opacity-100"}`}
-      >
-        <Navigation forceWhiteBackground />
+        {/* Tags filter */}
+        <div className="mt-8 flex flex-wrap gap-2 justify-center">
+          {allTags.map((tag) => (
+            <button
+              key={tag}
+              onClick={() => handleTagClick(tag)}
+              className={`px-3 py-1 rounded-full text-sm ${
+                currentTag === tag
+                  ? "bg-primary text-primary-foreground"
+                  : "bg-muted text-muted-foreground hover:bg-muted/80"
+              }`}
+            >
+              {tag}
+            </button>
+          ))}
+        </div>
 
-        <main>
-          {/* Header */}
-          <div className="px-6 pt-32 sm:pt-40 lg:px-8">
-            <div className="mx-auto max-w-2xl text-center">
-              <h1 className="text-4xl font-bold tracking-tight text-white sm:text-6xl">
-                Projects
-              </h1>
-              <p className="mt-6 text-lg leading-8 text-gray-300">
-                A showcase of my technical projects and contributions.
-              </p>
-            </div>
-          </div>
-
-          {/* Filters */}
-          <div className="mx-auto mt-12 max-w-7xl px-6 lg:px-8">
-            <div className="flex flex-wrap gap-2">
-              {selectedTag && (
-                <button
-                  onClick={() => setSelectedTag(null)}
-                  className="rounded-full bg-purple-600 px-4 py-1.5 text-sm font-semibold leading-6 text-white hover:bg-purple-500 transition-colors duration-200 shadow-sm hover:shadow-md flex items-center gap-2"
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="h-4 w-4"
-                    viewBox="0 0 20 20"
-                    fill="currentColor"
-                  >
-                    <path
-                      fillRule="evenodd"
-                      d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                      clipRule="evenodd"
-                    />
-                  </svg>
-                  Clear Filter
-                </button>
-              )}
-              {allTags.map((tag) => (
-                <button
-                  key={tag}
-                  onClick={() => setSelectedTag(tag)}
-                  className={`rounded-full px-3 py-1 text-sm font-semibold leading-6 ring-1 ring-inset transition-colors ${
-                    selectedTag === tag
-                      ? "bg-blue-500 text-white ring-blue-500"
-                      : "bg-blue-500/10 text-blue-300 ring-blue-500/20 hover:bg-blue-500/20"
-                  }`}
-                >
-                  {tag}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* Projects Grid */}
-          <div className="mx-auto mt-16 max-w-7xl px-6 lg:px-8">
-            <div className="mx-auto grid max-w-2xl grid-cols-1 gap-x-8 gap-y-20 lg:mx-0 lg:max-w-none lg:grid-cols-3">
-              {filteredProjects.map((project) => (
-                <Card
-                  key={project.slug}
-                  title={project.title}
-                  description={project.description}
-                  image={project.image}
+        {/* Projects grid */}
+        <div className="mx-auto mt-16 grid max-w-2xl grid-cols-1 gap-x-8 gap-y-20 lg:mx-0 lg:max-w-none lg:grid-cols-3">
+          {filteredProjects.map((project) => (
+            <article key={project.slug} className="flex flex-col items-start">
+              <div className="relative w-full">
+                <ProjectVideo
                   video={project.video}
-                  link={`/p/${project.slug}`}
-                  tags={project.tech}
-                  type="project"
+                  image={project.image}
+                  title={project.title}
                 />
-              ))}
-            </div>
-          </div>
-
-          {/* CTA */}
-          <div className="mx-auto mt-32 max-w-7xl px-6 sm:mt-40 lg:px-8">
-            <div className="relative isolate overflow-hidden bg-white/10 backdrop-blur-sm px-6 py-24 shadow-2xl sm:rounded-3xl sm:px-24 border border-white/20">
-              <h2 className="mx-auto max-w-2xl text-center text-3xl font-bold tracking-tight text-white sm:text-4xl">
-                Let's Build Something Together
-              </h2>
-              <p className="mx-auto mt-6 max-w-xl text-center text-lg leading-8 text-gray-300">
-                Have a project in mind? I'd love to help you bring it to life.
-              </p>
-              <div className="mt-10 flex justify-center">
-                <Link
-                  href="/contact"
-                  className="rounded-md bg-blue-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-400"
-                >
-                  Get in touch
-                </Link>
               </div>
-            </div>
-          </div>
-        </main>
-
-        {/* Footer */}
-        <Footer dark />
+              <div className="max-w-xl">
+                <div className="mt-8 flex items-center gap-x-4 text-xs">
+                  <time
+                    dateTime={project.date}
+                    className="text-muted-foreground"
+                  >
+                    {new Date(project.date).toLocaleDateString()}
+                  </time>
+                  {project.featured && (
+                    <span className="relative z-10 rounded-full bg-primary/10 px-3 py-1.5 font-medium text-primary">
+                      Featured
+                    </span>
+                  )}
+                </div>
+                <div className="group relative">
+                  <h3 className="mt-3 text-lg font-semibold leading-6 text-foreground">
+                    <span className="absolute inset-0" />
+                    {project.title}
+                  </h3>
+                  <p className="mt-5 text-sm leading-6 text-muted-foreground">
+                    {project.description}
+                  </p>
+                </div>
+                <div className="mt-4 flex flex-wrap gap-2">
+                  {project.tech.map((tech) => (
+                    <span
+                      key={tech}
+                      className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-secondary text-secondary-foreground"
+                    >
+                      {tech}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            </article>
+          ))}
+        </div>
       </div>
     </div>
   );

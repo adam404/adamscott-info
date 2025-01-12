@@ -4,7 +4,7 @@ import matter from "gray-matter";
 import ProjectsClient from "./projects-client";
 import { Metadata } from "next";
 
-interface ProjectFrontmatter {
+export interface ProjectFrontmatter {
   title: string;
   description: string;
   date: string;
@@ -15,7 +15,7 @@ interface ProjectFrontmatter {
   featured?: boolean;
 }
 
-interface Project extends ProjectFrontmatter {
+export interface Project extends ProjectFrontmatter {
   slug: string;
 }
 
@@ -65,11 +65,15 @@ export const metadata: Metadata = {
   },
 };
 
-export default async function Projects() {
+interface PageProps {
+  searchParams: { [key: string]: string | string[] | undefined };
+}
+
+export default async function Projects({ searchParams }: PageProps) {
   const projects = await getProjects();
   const allTags = Array.from(
     new Set(projects.flatMap((project) => project.tech))
-  );
+  ).sort();
 
   return <ProjectsClient projects={projects} allTags={allTags} />;
 }
