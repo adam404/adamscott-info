@@ -42,35 +42,36 @@ export default function BackendAnimation({
 
     // Define animation functions within the non-null ctx scope
     const drawIsometricCube = (x: number, y: number, size: number) => {
-      const h = size * 0.866; // height of equilateral triangle
+      // Using 30 degree angle for isometric projection
+      const h = size * 0.577; // height factor for 30 degree angle (tan(30°))
 
       ctx.strokeStyle = "rgba(50, 205, 50, 0.5)";
       ctx.lineWidth = 2;
 
       // Top face
       ctx.beginPath();
-      ctx.moveTo(x, y - h / 2);
+      ctx.moveTo(x, y);
       ctx.lineTo(x + size / 2, y - h);
-      ctx.lineTo(x + size, y - h / 2);
-      ctx.lineTo(x + size / 2, y);
+      ctx.lineTo(x + size, y);
+      ctx.lineTo(x + size / 2, y + h);
       ctx.closePath();
       ctx.stroke();
 
       // Right face
       ctx.beginPath();
-      ctx.moveTo(x + size, y - h / 2);
-      ctx.lineTo(x + size, y + h / 2);
+      ctx.moveTo(x + size, y);
+      ctx.lineTo(x + size, y + size);
+      ctx.lineTo(x + size / 2, y + size + h);
       ctx.lineTo(x + size / 2, y + h);
-      ctx.lineTo(x + size / 2, y);
       ctx.closePath();
       ctx.stroke();
 
       // Left face
       ctx.beginPath();
-      ctx.moveTo(x + size / 2, y);
-      ctx.lineTo(x + size / 2, y + h);
-      ctx.lineTo(x, y + h / 2);
-      ctx.lineTo(x, y - h / 2);
+      ctx.moveTo(x + size / 2, y + h);
+      ctx.lineTo(x + size / 2, y + size + h);
+      ctx.lineTo(x, y + size);
+      ctx.lineTo(x, y);
       ctx.closePath();
       ctx.stroke();
     };
