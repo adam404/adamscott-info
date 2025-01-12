@@ -51,13 +51,13 @@ export default function CloudDevOpsAnimation({
       });
     }
 
-    function drawContainer(
+    const drawContainer = (
       x: number,
       y: number,
       width: number,
       height: number,
       color: string
-    ) {
+    ) => {
       const depth = 10;
 
       // Draw top face
@@ -102,9 +102,9 @@ export default function CloudDevOpsAnimation({
       ctx.moveTo(x + (width * 2) / 3, y);
       ctx.lineTo(x + (width * 2) / 3 - depth, y + depth);
       ctx.stroke();
-    }
+    };
 
-    function shadeColor(color: string, percent: number) {
+    const shadeColor = (color: string, percent: number) => {
       const num = parseInt(color.replace("#", ""), 16);
       const amt = Math.round(2.55 * percent);
       const R = (num >> 16) + amt;
@@ -121,9 +121,9 @@ export default function CloudDevOpsAnimation({
           .toString(16)
           .slice(1)
       );
-    }
+    };
 
-    function drawConnections() {
+    const drawConnections = () => {
       ctx.strokeStyle = "rgba(255, 255, 255, 0.1)";
       ctx.lineWidth = 1;
 
@@ -153,10 +153,10 @@ export default function CloudDevOpsAnimation({
           }
         });
       });
-    }
+    };
 
-    function animate() {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
+    const animate = () => {
+      ctx.clearRect(0, 0, rect.width, rect.height);
 
       drawConnections();
 
@@ -168,13 +168,13 @@ export default function CloudDevOpsAnimation({
 
       frame++;
       requestAnimationFrame(animate);
-    }
+    };
 
     animate();
 
     // Cleanup
     return () => {
-      // Cancel animation frame if needed
+      // No cleanup needed as the component unmount will stop the animation
     };
   }, []);
 

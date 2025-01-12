@@ -40,7 +40,8 @@ export default function BackendAnimation({
       });
     }
 
-    function drawIsometricCube(x: number, y: number, size: number) {
+    // Define animation functions within the non-null ctx scope
+    const drawIsometricCube = (x: number, y: number, size: number) => {
       const h = size * 0.866; // height of equilateral triangle
 
       ctx.strokeStyle = "rgba(50, 205, 50, 0.5)";
@@ -72,9 +73,9 @@ export default function BackendAnimation({
       ctx.lineTo(x, y - h / 2);
       ctx.closePath();
       ctx.stroke();
-    }
+    };
 
-    function drawDataFlow() {
+    const drawDataFlow = () => {
       dataPoints.forEach((point, i) => {
         // Draw connecting lines
         ctx.strokeStyle = "rgba(50, 205, 50, 0.2)";
@@ -88,11 +89,11 @@ export default function BackendAnimation({
           }
         });
 
-        // Draw data point with pulsing effect (always positive)
+        // Draw data point with pulsing effect
         ctx.fillStyle = "rgba(50, 205, 50, 0.8)";
         ctx.beginPath();
-        const pulseScale = (Math.sin(frame * 0.05 + i) + 1) / 2; // Normalize to 0-1 range
-        const radius = point.size * (0.5 + pulseScale * 0.5); // Ensure minimum size
+        const pulseScale = (Math.sin(frame * 0.05 + i) + 1) / 2;
+        const radius = point.size * (0.5 + pulseScale * 0.5);
         ctx.arc(point.x, point.y, radius, 0, Math.PI * 2);
         ctx.fill();
 
@@ -103,10 +104,10 @@ export default function BackendAnimation({
           point.x = Math.random() * rect.width;
         }
       });
-    }
+    };
 
-    function animate() {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
+    const animate = () => {
+      ctx.clearRect(0, 0, rect.width, rect.height);
 
       // Draw background cubes
       for (let i = 0; i < 3; i++) {
@@ -120,13 +121,13 @@ export default function BackendAnimation({
 
       frame++;
       requestAnimationFrame(animate);
-    }
+    };
 
     animate();
 
     // Cleanup
     return () => {
-      // Cancel animation frame if needed
+      // No cleanup needed as the component unmount will stop the animation
     };
   }, []);
 

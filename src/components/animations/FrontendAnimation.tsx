@@ -46,7 +46,7 @@ export default function FrontendAnimation({
       });
     }
 
-    function drawIsometricGrid() {
+    const drawIsometricGrid = () => {
       const gridSize = 20;
       const gridOffset = frame * 0.5;
 
@@ -68,9 +68,9 @@ export default function FrontendAnimation({
         ctx.lineTo(i + (gridOffset % gridSize) + rect.height, rect.height);
         ctx.stroke();
       }
-    }
+    };
 
-    function drawElements() {
+    const drawElements = () => {
       elements.forEach((el, i) => {
         ctx.fillStyle = el.color;
         ctx.beginPath();
@@ -89,23 +89,23 @@ export default function FrontendAnimation({
           el.x = Math.random() * rect.width;
         }
       });
-    }
+    };
 
-    function animate() {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
+    const animate = () => {
+      ctx.clearRect(0, 0, rect.width, rect.height);
 
       drawIsometricGrid();
       drawElements();
 
       frame++;
       requestAnimationFrame(animate);
-    }
+    };
 
     animate();
 
     // Cleanup
     return () => {
-      // Cancel animation frame if needed
+      // No cleanup needed as the component unmount will stop the animation
     };
   }, []);
 
