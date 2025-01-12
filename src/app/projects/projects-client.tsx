@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { Suspense, useCallback, useEffect, useState } from "react";
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import { Project } from "./page";
 import ProjectVideo from "@/components/ProjectVideo";
@@ -13,10 +13,7 @@ interface ProjectsClientProps {
   allTags: string[];
 }
 
-export default function ProjectsClient({
-  projects,
-  allTags,
-}: ProjectsClientProps) {
+function ProjectsContent({ projects, allTags }: ProjectsClientProps) {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -56,7 +53,6 @@ export default function ProjectsClient({
       <div
         className={`relative ${showUI ? "z-10" : "pointer-events-none"}`}
         onClick={(e) => {
-          // Only handle clicks on the container itself, not its children
           if (e.target === e.currentTarget) {
             setShowUI((prev) => !prev);
           }
@@ -151,5 +147,13 @@ export default function ProjectsClient({
         )}
       </div>
     </div>
+  );
+}
+
+export default function ProjectsClient(props: ProjectsClientProps) {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <ProjectsContent {...props} />
+    </Suspense>
   );
 }

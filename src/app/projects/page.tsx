@@ -65,14 +65,10 @@ export const metadata: Metadata = {
   },
 };
 
-interface PageProps {
-  searchParams: { [key: string]: string | string[] | undefined };
-}
-
-export default async function Projects({ searchParams }: PageProps) {
+export default async function Page() {
   const projects = await getProjects();
   const allTags = Array.from(
-    new Set(projects.flatMap((project) => project.tech))
+    new Set(projects.flatMap((project: Project) => project.tech))
   ).sort();
 
   return <ProjectsClient projects={projects} allTags={allTags} />;
