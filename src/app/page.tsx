@@ -5,6 +5,9 @@ import Navigation from "@/components/Navigation";
 import Hero from "@/components/Hero";
 import Footer from "@/components/Footer";
 import { getFeaturedPosts, getFeaturedProjects } from "@/lib/content";
+import FrontendAnimation from "@/components/animations/FrontendAnimation";
+import BackendAnimation from "@/components/animations/BackendAnimation";
+import CloudDevOpsAnimation from "@/components/animations/CloudDevOpsAnimation";
 
 export default async function Home() {
   const featuredPosts = await getFeaturedPosts();
@@ -89,26 +92,24 @@ export default async function Home() {
                   name: "Frontend Development",
                   description:
                     "React, Next.js, TypeScript, Tailwind CSS, and modern web technologies.",
-                  icon: "🎨",
+                  animation: FrontendAnimation,
                 },
                 {
                   name: "Backend Development",
                   description:
                     "Node.js, Python, RESTful APIs, and database design.",
-                  icon: "⚙️",
+                  animation: BackendAnimation,
                 },
                 {
                   name: "Cloud & DevOps",
                   description: "AWS, Docker, Kubernetes, and CI/CD pipelines.",
-                  icon: "☁️",
+                  animation: CloudDevOpsAnimation,
                 },
               ].map((skill) => (
                 <div key={skill.name} className="flex flex-col">
                   <dt className="text-base font-semibold leading-7 text-foreground">
-                    <div className="mb-6 flex h-10 w-10 items-center justify-center rounded-lg bg-primary">
-                      <span className="text-2xl" aria-hidden="true">
-                        {skill.icon}
-                      </span>
+                    <div className="mb-6 w-full overflow-hidden rounded-lg bg-zinc-900/80 dark:bg-zinc-800/80 aspect-video">
+                      <skill.animation className="h-full w-full" />
                     </div>
                     {skill.name}
                   </dt>
