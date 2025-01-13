@@ -28,7 +28,11 @@ const fetchNews = async (): Promise<NewsItem[]> => {
         article.description &&
         article.url &&
         article.publishedAt &&
-        article.urlToImage
+        article.urlToImage &&
+        !article.title.toLowerCase().includes("trump") &&
+        !article.description.toLowerCase().includes("trump") &&
+        !article.title.toLowerCase().includes("politic") &&
+        !article.description.toLowerCase().includes("politic")
     )
     .slice(0, 3);
 };
