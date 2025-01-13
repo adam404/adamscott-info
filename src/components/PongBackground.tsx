@@ -32,6 +32,7 @@ export default function PongBackground({
 }: Props) {
   const [score, setScore] = useState({ player: 0, ai: 0 });
   const [isFullScreen, setIsFullScreen] = useState(false);
+  const [isAutoPlay, setIsAutoPlay] = useState(true);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const contextRef = useRef<CanvasRenderingContext2D | null>(null);
   const dimensionsRef = useRef({ width: 1024, height: 768 });
@@ -51,13 +52,13 @@ export default function PongBackground({
       y: dimensionsRef.current.height / 2,
       height: 100,
       width: 10,
-      speed: 5,
+      speed: 8,
     },
     right: {
       y: dimensionsRef.current.height / 2,
       height: 100,
       width: 10,
-      speed: 5,
+      speed: 8,
     },
   });
 
@@ -70,48 +71,97 @@ export default function PongBackground({
 
   const resetBall = useCallback(() => {
     const { width, height } = dimensionsRef.current;
-    const speed = 12; // Classic Pong speed - faster and more direct
+    const speed = 8; // Reduced from 12 for more manageable gameplay
     ballRef.current = {
       x: width / 2,
       y: height / 2,
       speedX: (Math.random() > 0.5 ? 1 : -1) * speed,
-      speedY: (Math.random() > 0.5 ? 1 : -1) * speed * 0.5, // Less vertical movement
+      speedY: (Math.random() > 0.5 ? 1 : -1) * speed * 0.4, // Less vertical movement
       size: 8,
     };
   }, []);
 
-  const updateAI = useCallback((deltaTime: number) => {
-    const ball = ballRef.current;
-    const paddle = paddleRef.current.left;
+  const updateAI = useCallback(
+    (deltaTime: number, paddle: Paddle, isLeftPaddle: boolean) => {
+      const ball = ballRef.current;
+      const width = dimensionsRef.current.width;
 
-    // Only move towards ball when it's moving towards AI side
-    if (ball.speedX < 0) {
-      const targetY = ball.y - paddle.height / 2;
-      const diff = targetY - paddle.y;
+      // Predict where the ball will intersect with paddle's plane
+      const paddleX = isLeftPaddle ? paddle.width : width - paddle.width;
+      const distanceToTravel = isLeftPaddle
+        ? ball.x - paddleX
+        : paddleX - ball.x;
 
-      // Add some prediction and smoothing
-      const moveSpeed = paddle.speed * deltaTime * 0.7; // Reduced speed for medium difficulty
-      const maxMove = Math.min(Math.abs(diff), moveSpeed);
+      if (
+        (isLeftPaddle && ball.speedX < 0) ||
+        (!isLeftPaddle && ball.speedX > 0)
+      ) {
+        const timeToIntercept = distanceToTravel / Math.abs(ball.speedX);
+        const predictedY = ball.y + ball.speedY * timeToIntercept;
 
-      if (Math.abs(diff) > paddle.height / 8) {
-        // Reduced reaction threshold
-        paddle.y += Math.sign(diff) * maxMove;
+        // Account for multiple bounces
+        let targetY = predictedY;
+        const height = dimensionsRef.current.height;
+        const bounceCount = Math.floor(Math.abs(predictedY) / height);
+
+        if (bounceCount > 0) {
+          const remainder = Math.abs(predictedY) % height;
+          targetY = bounceCount % 2 === 0 ? remainder : height - remainder;
+        } else if (predictedY < 0) {
+          targetY = -predictedY;
+        } else if (predictedY > height) {
+          targetY = height - (predictedY - height);
+        }
+
+        // Add prediction error (more for left paddle)
+        const predictionError = (Math.random() - 0.5) * (isLeftPaddle ? 15 : 5);
+        targetY += predictionError;
+
+        // Add slight delay for left paddle by offsetting target
+        if (isLeftPaddle) {
+          targetY += (Math.random() - 0.5) * 30;
+        }
+
+        targetY = Math.min(
+          Math.max(targetY - paddle.height / 2, 0),
+          height - paddle.height
+        );
+
+        // Smooth movement with acceleration
+        const diff = targetY - paddle.y;
+        const moveSpeed =
+          paddle.speed * deltaTime * (isLeftPaddle ? 0.75 : 0.85);
+        const maxMove = Math.min(Math.abs(diff), moveSpeed);
+
+        // Add movement threshold to prevent micro-adjustments
+        if (Math.abs(diff) > 2) {
+          // Apply smooth acceleration (slower for left paddle)
+          const acceleration = Math.min(
+            1,
+            Math.abs(diff) / (isLeftPaddle ? 90 : 60)
+          );
+          paddle.y += Math.sign(diff) * maxMove * acceleration;
+        }
+      } else {
+        // Smoother return to center when ball is moving away
+        const centerY = dimensionsRef.current.height / 2 - paddle.height / 2;
+        const diffToCenter = centerY - paddle.y;
+        if (Math.abs(diffToCenter) > paddle.height / 4) {
+          const centerSpeed =
+            paddle.speed * deltaTime * (isLeftPaddle ? 0.4 : 0.5);
+          const acceleration = Math.min(1, Math.abs(diffToCenter) / 120);
+          paddle.y += Math.sign(diffToCenter) * centerSpeed * acceleration;
+        }
       }
-    } else {
-      // When ball is moving away, slowly return to center
-      const centerY = dimensionsRef.current.height / 2 - paddle.height / 2;
-      const diffToCenter = centerY - paddle.y;
-      if (Math.abs(diffToCenter) > paddle.height / 4) {
-        paddle.y += Math.sign(diffToCenter) * paddle.speed * deltaTime * 0.3;
-      }
-    }
 
-    // Keep paddle within bounds
-    paddle.y = Math.max(
-      0,
-      Math.min(dimensionsRef.current.height - paddle.height, paddle.y)
-    );
-  }, []);
+      // Keep paddle within bounds
+      paddle.y = Math.max(
+        0,
+        Math.min(dimensionsRef.current.height - paddle.height, paddle.y)
+      );
+    },
+    []
+  );
 
   const updateBall = useCallback(
     (deltaTime: number) => {
@@ -141,7 +191,7 @@ export default function PongBackground({
         ) {
           // Classic Pong uses 8 segments on the paddle for different angles
           const segment = Math.floor(((ball.y - paddle.y) / paddle.height) * 8);
-          const speed = 12;
+          const speed = 8; // Reduced from 12
 
           // Angles: -45, -35, -25, -15, 15, 25, 35, 45 degrees
           const angles = [
@@ -231,31 +281,46 @@ export default function PongBackground({
         : 1;
       lastFrameTimeRef.current = timestamp;
 
-      updateAI(deltaTime);
+      updateAI(deltaTime, paddleRef.current.left, true);
+
+      // Auto-play right paddle when not in active play
+      if (isAutoPlay) {
+        updateAI(deltaTime, paddleRef.current.right, false);
+      }
+
       updateBall(deltaTime);
       draw();
 
       frameRef.current = requestAnimationFrame(animate);
     },
-    [updateAI, updateBall, draw]
+    [updateAI, updateBall, draw, isAutoPlay]
   );
 
-  const handleMouseMove = useCallback((e: MouseEvent) => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
+  const handleMouseMove = useCallback(
+    (e: MouseEvent) => {
+      if (!isFullScreen) return; // Ignore mouse movement when not in fullscreen
 
-    const rect = canvas.getBoundingClientRect();
-    const mouseY = e.clientY - rect.top;
-    const paddle = paddleRef.current.right;
+      if (isAutoPlay) {
+        setIsAutoPlay(false);
+      }
 
-    paddle.y = Math.max(
-      0,
-      Math.min(
-        dimensionsRef.current.height - paddle.height,
-        mouseY - paddle.height / 2
-      )
-    );
-  }, []);
+      const canvas = canvasRef.current;
+      if (!canvas) return;
+
+      const rect = canvas.getBoundingClientRect();
+      const mouseY = e.clientY - rect.top;
+      const paddle = paddleRef.current.right;
+
+      paddle.y = Math.max(
+        0,
+        Math.min(
+          dimensionsRef.current.height - paddle.height,
+          mouseY - paddle.height / 2
+        )
+      );
+    },
+    [isAutoPlay, isFullScreen]
+  );
 
   const handleClick = useCallback(
     (e: ReactMouseEvent<HTMLDivElement>) => {
@@ -266,7 +331,14 @@ export default function PongBackground({
       if (!isInteractive) {
         e.preventDefault();
         e.stopPropagation();
-        setIsFullScreen((prev) => !prev);
+        setIsFullScreen((prev) => {
+          const newFullScreen = !prev;
+          // Always auto-play when not in fullscreen
+          if (!newFullScreen) {
+            setIsAutoPlay(true);
+          }
+          return newFullScreen;
+        });
         onFire?.((prev) => !prev);
       }
     },
@@ -276,7 +348,14 @@ export default function PongBackground({
   const handleKeyDown = useCallback(
     (e: KeyboardEvent) => {
       if (e.key === "f") {
-        setIsFullScreen((prev) => !prev);
+        setIsFullScreen((prev) => {
+          const newFullScreen = !prev;
+          // Always auto-play when not in fullscreen
+          if (!newFullScreen) {
+            setIsAutoPlay(true);
+          }
+          return newFullScreen;
+        });
         onFire?.((prev) => !prev);
       }
     },
@@ -297,6 +376,11 @@ export default function PongBackground({
     contextRef.current = canvas.getContext("2d");
     updateDimensions();
 
+    // Set initial auto-play state
+    if (!isFullScreen) {
+      setIsAutoPlay(true);
+    }
+
     window.addEventListener("resize", updateDimensions);
     window.addEventListener("mousemove", handleMouseMove);
     window.addEventListener("keydown", handleKeyDown);
@@ -308,7 +392,7 @@ export default function PongBackground({
       window.removeEventListener("keydown", handleKeyDown);
       cancelAnimationFrame(frameRef.current);
     };
-  }, [animate, handleMouseMove, resetBall, handleKeyDown]);
+  }, [animate, handleMouseMove, resetBall, handleKeyDown, isFullScreen]);
 
   return (
     <div

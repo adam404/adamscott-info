@@ -14,6 +14,8 @@ interface Particle {
   points: number[];
   type: "asteroid" | "geometric";
   immuneUntil?: number;
+  spawnX?: number;
+  spawnY?: number;
 }
 
 interface Ship {
@@ -81,6 +83,8 @@ export default function AsteroidsBackground({
       size?: number,
       immune: boolean = false
     ): Particle => {
+      const asteroidX = x ?? Math.random() * dimensionsRef.current.width;
+      const asteroidY = y ?? Math.random() * dimensionsRef.current.height;
       const asteroidSize = size ?? Math.random() * 30 + 15;
       const points: number[] = [];
       const numPoints = Math.floor(Math.random() * 4) + 8;
@@ -93,8 +97,10 @@ export default function AsteroidsBackground({
       }
 
       return {
-        x: x ?? Math.random() * dimensionsRef.current.width,
-        y: y ?? Math.random() * dimensionsRef.current.height,
+        x: asteroidX,
+        y: asteroidY,
+        spawnX: immune ? asteroidX : undefined,
+        spawnY: immune ? asteroidY : undefined,
         size: asteroidSize,
         speedX: (Math.random() - 0.5) * 2,
         speedY: (Math.random() - 0.5) * 2,
@@ -103,7 +109,7 @@ export default function AsteroidsBackground({
         rotationSpeed: (Math.random() - 0.5) * 0.03,
         points,
         type: "asteroid",
-        immuneUntil: immune ? Date.now() + 1000 : undefined,
+        immuneUntil: immune ? Date.now() + 500 : undefined,
       };
     },
     []
@@ -175,26 +181,49 @@ export default function AsteroidsBackground({
     else if (ship.y > height) ship.y = 0;
   }, []);
 
-  const createProjectile = useCallback(
-    (ship: Ship): Projectile => ({
+  const createProjectile = useCallback((ship: Ship): Projectile => {
+    const projectile = {
       x: ship.x + Math.cos(ship.angle) * 15,
       y: ship.y + Math.sin(ship.angle) * 15,
       angle: ship.angle,
       speed: 8,
       life: Date.now() + 2000,
-    }),
-    []
-  );
+    };
+    console.log("Creating projectile:", {
+      pos: { x: projectile.x, y: projectile.y },
+      angle: projectile.angle,
+      shipPos: { x: ship.x, y: ship.y },
+    });
+    return projectile;
+  }, []);
 
   const updateProjectiles = useCallback((deltaTime: number) => {
     const now = Date.now();
+    const beforeCount = projectilesRef.current.length;
     projectilesRef.current = projectilesRef.current
-      .filter((p) => p.life > now)
+      .filter((p) => {
+        const alive = p.life > now;
+        if (!alive) {
+          console.log("Projectile expired:", {
+            pos: { x: p.x, y: p.y },
+            life: p.life,
+            now,
+          });
+        }
+        return alive;
+      })
       .map((p) => {
         p.x += Math.cos(p.angle) * p.speed * deltaTime;
         p.y += Math.sin(p.angle) * p.speed * deltaTime;
         return p;
       });
+
+    if (beforeCount !== projectilesRef.current.length) {
+      console.log("Projectiles updated:", {
+        before: beforeCount,
+        after: projectilesRef.current.length,
+      });
+    }
   }, []);
 
   const checkCollisions = useCallback(() => {
@@ -203,14 +232,27 @@ export default function AsteroidsBackground({
     let asteroidsToAdd: Particle[] = [];
     const now = Date.now();
 
-    // First handle projectile collisions
-    outerLoop: for (let i = particlesRef.current.length - 1; i >= 0; i--) {
+    console.log("Starting collision check:", {
+      projectiles: projectilesRef.current.length,
+      asteroids: particlesRef.current.length,
+      shipPos: { x: ship.x, y: ship.y },
+    });
+
+    // First phase: Handle asteroid splitting only
+    let collisionOccurred = false;
+    for (
+      let i = particlesRef.current.length - 1;
+      i >= 0 && !collisionOccurred;
+      i--
+    ) {
       const particle = particlesRef.current[i];
+
+      // Only check non-immune asteroids for bullet collisions
       if (
         particle.type === "asteroid" &&
         (!particle.immuneUntil || now > particle.immuneUntil)
       ) {
-        // Check projectile collisions first
+        // Check projectile collisions
         for (let j = projectilesRef.current.length - 1; j >= 0; j--) {
           const projectile = projectilesRef.current[j];
           const pdx = projectile.x - particle.x;
@@ -219,22 +261,27 @@ export default function AsteroidsBackground({
           const pMinDistance = particle.size * 0.8;
 
           if (pDistanceSquared < pMinDistance * pMinDistance) {
-            // Remove the projectile immediately to prevent multiple hits
+            console.log("Bullet hit asteroid:", {
+              asteroidPos: { x: particle.x, y: particle.y },
+              bulletPos: { x: projectile.x, y: projectile.y },
+              asteroidSize: particle.size,
+            });
+
+            // Remove the projectile
             projectilesRef.current.splice(j, 1);
+            collisionOccurred = true;
 
             // Break asteroid into smaller pieces if it's large enough
             if (particle.size > 25) {
-              // Create two smaller asteroids with increased offset positions
+              // Create two smaller asteroids with offset positions
               const newSize = particle.size * 0.6;
               const projectileAngle = Math.atan2(
                 projectile.y - particle.y,
                 projectile.x - particle.x
               );
 
-              // Increased offset distance to 4x the newSize for more separation
-              const offsetDistance = newSize * 4;
-
-              // Create new asteroids with larger position offsets and perpendicular to hit direction
+              // Calculate offset positions perpendicular to the projectile angle
+              const offsetDistance = newSize * 2;
               const newAsteroids = [
                 createAsteroid(
                   particle.x +
@@ -254,9 +301,16 @@ export default function AsteroidsBackground({
                 ),
               ];
 
-              // Adjust velocities for more dynamic movement with increased spread
+              console.log("Creating new fragments:", {
+                originalSize: particle.size,
+                newSize,
+                fragmentCount: newAsteroids.length,
+                positions: newAsteroids.map((a) => ({ x: a.x, y: a.y })),
+              });
+
+              // Adjust velocities for more dynamic movement
               newAsteroids.forEach((asteroid, index) => {
-                const spreadAngle = Math.PI * 0.75; // Increased to 135 degrees for more separation
+                const spreadAngle = Math.PI * 0.5;
                 const baseAngle = projectileAngle;
                 const newAngle =
                   baseAngle + (index === 0 ? spreadAngle : -spreadAngle);
@@ -264,20 +318,23 @@ export default function AsteroidsBackground({
                   Math.sqrt(
                     particle.speedX * particle.speedX +
                       particle.speedY * particle.speedY
-                  ) * 1.5; // Increased speed multiplier
+                  ) * 1.5;
 
                 asteroid.speedX = Math.cos(newAngle) * speed;
                 asteroid.speedY = Math.sin(newAngle) * speed;
+                asteroid.immuneUntil = now + 500;
               });
 
-              // Queue the new asteroids to be added after the loop
+              // Add new asteroids to a temporary array
               asteroidsToAdd.push(...newAsteroids);
             }
 
-            // Remove the original asteroid
+            // Remove the original asteroid and update score
             particlesRef.current.splice(i, 1);
-            setScore((prev) => prev + 100);
-            break outerLoop; // Exit both loops after hit
+            const newScore = score + 100;
+            console.log("Updating score:", { oldScore: score, newScore });
+            setScore(newScore);
+            break;
           }
         }
       }
@@ -285,12 +342,19 @@ export default function AsteroidsBackground({
 
     // Add new asteroids after all collision checks
     if (asteroidsToAdd.length > 0) {
+      console.log("Adding new asteroids:", {
+        count: asteroidsToAdd.length,
+        totalAsteroids: particlesRef.current.length + asteroidsToAdd.length,
+      });
       particlesRef.current.push(...asteroidsToAdd);
+      return; // Skip remaining checks this frame
     }
 
-    // Then check ship collisions with remaining asteroids
+    // Check ship collisions only with non-immune asteroids
+    let shipCollided = false;
     for (const particle of particlesRef.current) {
       if (
+        !shipCollided &&
         particle.type === "asteroid" &&
         (!particle.immuneUntil || now > particle.immuneUntil)
       ) {
@@ -300,19 +364,37 @@ export default function AsteroidsBackground({
         const minDistance = shipRadius + particle.size * 0.7;
 
         if (distanceSquared < minDistance * minDistance) {
-          // Reset ship position on collision
+          console.log("Ship collision detected:", {
+            shipPos: { x: ship.x, y: ship.y },
+            asteroidPos: { x: particle.x, y: particle.y },
+            distance: Math.sqrt(distanceSquared),
+            minDistance,
+            asteroidSize: particle.size,
+            asteroidImmune: particle.immuneUntil
+              ? particle.immuneUntil > now
+              : false,
+          });
+
+          shipCollided = true;
+          // Reset ship position and velocity
           ship.x = dimensionsRef.current.width / 2;
           ship.y = dimensionsRef.current.height / 2;
           ship.velocityX = 0;
           ship.velocityY = 0;
           ship.angle = 0;
           setScore(0);
-          return;
+
+          // Clear all projectiles
+          projectilesRef.current = [];
         }
       }
     }
 
-    // Spawn new asteroids
+    if (shipCollided) {
+      return;
+    }
+
+    // Only spawn new asteroids if there are too few
     const asteroidCount = particlesRef.current.filter(
       (p) => p.type === "asteroid"
     ).length;
@@ -458,6 +540,7 @@ export default function AsteroidsBackground({
       if (e.key === " ") {
         const now = Date.now();
         if (now - shipRef.current.lastShot > 250) {
+          console.log("Shooting projectile");
           projectilesRef.current.push(createProjectile(shipRef.current));
           shipRef.current.lastShot = now;
         }

@@ -133,6 +133,16 @@ function ProjectsContent({ projects, allTags }: ProjectsClientProps) {
                               {project.description}
                             </p>
                           </div>
+                          <div className="mt-4 flex flex-wrap gap-2">
+                            {project.tech.map((tech) => (
+                              <span
+                                key={tech}
+                                className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-secondary text-secondary-foreground"
+                              >
+                                {tech}
+                              </span>
+                            ))}
+                          </div>
                         </div>
                       </article>
                     </Link>

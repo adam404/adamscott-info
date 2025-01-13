@@ -67,25 +67,37 @@ export default async function Blog() {
     <div className="bg-background min-h-screen relative isolate overflow-hidden">
       <div className="absolute inset-0 -z-10">
         <svg
-          className="absolute h-full w-full stroke-muted/20 [mask-image:radial-gradient(100%_100%_at_top_right,white,transparent)] animate-[spin_60s_linear_infinite]"
+          className="absolute h-full w-full stroke-muted/20 [mask-image:radial-gradient(100%_100%_at_top_right,white,transparent)]"
           aria-hidden="true"
-          style={{ animationTimingFunction: "linear" }}
+          style={{
+            animation: "gentleRotate 30s linear infinite",
+            transformOrigin: "center center",
+          }}
         >
+          <style>
+            {`
+              @keyframes gentleRotate {
+                0% { transform: rotate(0deg); }
+                50% { transform: rotate(30deg); }
+                100% { transform: rotate(0deg); }
+              }
+            `}
+          </style>
           <defs>
             <pattern
               id="blogPattern"
-              width="50"
-              height="50"
+              width="80"
+              height="80"
               patternUnits="userSpaceOnUse"
               patternTransform="rotate(12)"
             >
               <path
-                d="M0 50V45H50"
+                d="M0 80V70H80"
                 fill="none"
-                strokeWidth="1"
-                strokeDasharray="4 6"
+                strokeWidth="2"
+                strokeDasharray="6 8"
               />
-              <circle cx="25" cy="25" r="1" fill="currentColor" stroke="none" />
+              <circle cx="40" cy="40" r="2" fill="currentColor" stroke="none" />
             </pattern>
           </defs>
           <rect width="100%" height="100%" fill="url(#blogPattern)" />
@@ -93,8 +105,8 @@ export default async function Blog() {
             width="100%"
             height="100%"
             fill="url(#blogPattern)"
-            transform="rotate(60)"
-            opacity="0.5"
+            transform="rotate(30)"
+            opacity="0.7"
           />
         </svg>
       </div>
