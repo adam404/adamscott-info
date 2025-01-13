@@ -106,7 +106,7 @@ export default async function About() {
                   Building Digital Experiences
                 </p>
                 <p className="mt-6 text-lg leading-8 text-gray-600 dark:text-gray-300">
-                  With over 15 years of experience in software development, I
+                  With over 17 years of experience in software development, I
                   specialize in creating robust web applications and leading
                   technical teams to success. My expertise spans frontend and
                   backend development, cloud architecture, and DevOps practices.
