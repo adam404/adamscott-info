@@ -4,6 +4,7 @@ import { format } from "date-fns";
 import Navigation from "@/components/Navigation";
 import ProjectVideo from "@/components/ProjectVideo";
 import React from "react";
+import Link from "next/link";
 
 interface Project {
   title: string;
@@ -35,12 +36,13 @@ export default function ProjectContent({ project }: ProjectContentProps) {
           <div className="mx-auto max-w-2xl lg:mx-0 lg:max-w-3xl">
             <div className="mt-10">
               {project.technologies.map((tech) => (
-                <span
+                <Link
                   key={tech}
-                  className="inline-flex items-center mr-2 px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200"
+                  href={`/projects?tech=${encodeURIComponent(tech)}`}
+                  className="inline-flex items-center mr-2 px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200 hover:bg-blue-200 dark:hover:bg-blue-800 transition-colors"
                 >
                   {tech}
-                </span>
+                </Link>
               ))}
             </div>
             <h1 className="mt-6 text-4xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-5xl">

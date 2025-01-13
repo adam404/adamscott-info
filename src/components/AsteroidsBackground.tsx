@@ -475,7 +475,11 @@ export default function AsteroidsBackground({
 
   const handleClick = useCallback(
     (e: MouseEvent) => {
-      if (e.target === canvasRef.current) {
+      const target = e.target as HTMLElement;
+      const isInteractive = target.closest(
+        'button, a, input, textarea, article, [role="button"]'
+      );
+      if (!isInteractive) {
         e.stopPropagation();
         onFire?.((prev) => !prev);
       }
@@ -530,7 +534,7 @@ export default function AsteroidsBackground({
       <canvas
         ref={canvasRef}
         className={`w-full h-full ${forceWhiteBackground ? "bg-white" : "bg-transparent"}`}
-        style={{ touchAction: "auto" }}
+        style={{ touchAction: "auto", cursor: "pointer" }}
       />
     </div>
   );

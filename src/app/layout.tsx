@@ -8,6 +8,7 @@ import {
   GoogleTagManagerScript,
   GoogleTagManagerNoScript,
 } from "@/components/GoogleTagManager";
+import { siteConfig } from "@/lib/config";
 import "./globals.css";
 import "../styles/prism.css";
 
@@ -19,9 +20,9 @@ const alata = Alata({
 });
 
 export const metadata: Metadata = {
-  title: "Adam Scott - Software Engineer & Technical Leader",
-  description:
-    "Personal portfolio and blog of Adam Scott, a software engineer and technical leader specializing in web development and cloud architecture.",
+  metadataBase: new URL(siteConfig.url),
+  title: siteConfig.title,
+  description: siteConfig.description,
   icons: {
     icon: [
       {
@@ -44,11 +45,10 @@ export const metadata: Metadata = {
     ],
   },
   openGraph: {
-    title: "Adam Scott - Software Engineer & Technical Leader",
-    description:
-      "Personal portfolio and blog of Adam Scott, a software engineer and technical leader specializing in web development and cloud architecture.",
-    url: "https://adamscott.info",
-    siteName: "Adam Scott",
+    title: siteConfig.title,
+    description: siteConfig.description,
+    url: siteConfig.url,
+    siteName: siteConfig.name,
     locale: "en_US",
     type: "website",
   },
@@ -64,7 +64,7 @@ export const metadata: Metadata = {
     },
   },
   twitter: {
-    title: "Adam Scott",
+    title: siteConfig.name,
     card: "summary_large_image",
   },
   verification: {

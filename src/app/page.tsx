@@ -1,25 +1,29 @@
+import { Suspense } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import Card from "@/components/Card";
 import Navigation from "@/components/Navigation";
 import Hero from "@/components/Hero";
 import Footer from "@/components/Footer";
+import NewsSection from "@/components/NewsSection";
 import { getFeaturedPosts, getFeaturedProjects } from "@/lib/content";
+import { getNews } from "@/lib/getNews";
 import FrontendAnimation from "@/components/animations/FrontendAnimation";
 import BackendAnimation from "@/components/animations/BackendAnimation";
 import CloudDevOpsAnimation from "@/components/animations/CloudDevOpsAnimation";
 
-export default async function Home() {
+export default async function HomePage() {
   const featuredPosts = await getFeaturedPosts();
   const featuredProjects = await getFeaturedProjects();
+  const news = await getNews();
 
   return (
     <div className="bg-background min-h-screen font-sans">
       <Navigation forceWhiteBackground={false} />
-      <Hero />
+      <Hero news={news} />
 
       {/* Add padding to account for fixed navigation */}
-      <div className="pt-16">
+      <div className="">
         {/* Featured Projects Section */}
         <div className="mx-auto max-w-7xl px-6 lg:px-8 py-24 sm:py-32">
           <div className="mx-auto max-w-2xl text-center">

@@ -1,4 +1,10 @@
-import { useEffect, useRef, useState, useCallback } from "react";
+import {
+  useEffect,
+  useRef,
+  useState,
+  useCallback,
+  MouseEvent as ReactMouseEvent,
+} from "react";
 
 interface Ball {
   x: number;
@@ -252,8 +258,13 @@ export default function PongBackground({
   }, []);
 
   const handleClick = useCallback(
-    (e: MouseEvent) => {
-      if (e.target === canvasRef.current) {
+    (e: ReactMouseEvent<HTMLDivElement>) => {
+      const target = e.target as HTMLElement;
+      const isInteractive = target.closest(
+        'button, a, input, textarea, select, [role="button"], [tabindex="0"]'
+      );
+      if (!isInteractive) {
+        e.preventDefault();
         e.stopPropagation();
         setIsFullScreen((prev) => !prev);
         onFire?.((prev) => !prev);
@@ -289,20 +300,21 @@ export default function PongBackground({
     window.addEventListener("resize", updateDimensions);
     window.addEventListener("mousemove", handleMouseMove);
     window.addEventListener("keydown", handleKeyDown);
-    canvas.addEventListener("click", handleClick);
     frameRef.current = requestAnimationFrame(animate);
 
     return () => {
       window.removeEventListener("resize", updateDimensions);
       window.removeEventListener("mousemove", handleMouseMove);
       window.removeEventListener("keydown", handleKeyDown);
-      canvas.removeEventListener("click", handleClick);
       cancelAnimationFrame(frameRef.current);
     };
-  }, [animate, handleMouseMove, resetBall, handleClick, handleKeyDown]);
+  }, [animate, handleMouseMove, resetBall, handleKeyDown]);
 
   return (
-    <div className={`fixed inset-0 ${isFullScreen ? "z-50" : ""}`}>
+    <div
+      className={`fixed inset-0 ${isFullScreen ? "z-[100]" : "z-0"}`}
+      onClick={handleClick}
+    >
       <canvas
         ref={canvasRef}
         className={`w-full h-full ${
@@ -312,7 +324,7 @@ export default function PongBackground({
               ? "bg-background"
               : "bg-transparent"
         }`}
-        style={{ touchAction: "none" }}
+        style={{ touchAction: "none", cursor: "pointer" }}
       />
       {isFullScreen && (
         <div className="absolute top-4 left-4 text-sm text-white/60">

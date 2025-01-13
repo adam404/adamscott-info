@@ -1,9 +1,9 @@
 import Navigation from "@/components/Navigation";
-import Card from "@/components/Card";
 import Footer from "@/components/Footer";
 import { getAllPosts } from "@/lib/content";
 import ClientBlog from "@/components/blog/ClientBlog";
 import { Metadata } from "next";
+import { Suspense } from "react";
 
 export const revalidate = 3600; // Revalidate every hour
 
@@ -24,6 +24,38 @@ export const metadata: Metadata = {
       "Insights and articles about software development, cloud architecture, and technical leadership from Adam Scott.",
   },
 };
+
+function BlogLoading() {
+  return (
+    <div className="animate-pulse">
+      <div className="px-6 pt-32 sm:pt-40 lg:px-8">
+        <div className="mx-auto max-w-2xl text-center">
+          <div className="h-12 bg-muted rounded-lg mb-4"></div>
+          <div className="h-4 bg-muted rounded w-3/4 mx-auto"></div>
+        </div>
+      </div>
+      <div className="mx-auto mt-12 max-w-7xl px-6 lg:px-8">
+        <div className="flex flex-wrap gap-2 justify-center">
+          {[1, 2, 3, 4].map((i) => (
+            <div key={i} className="w-20 h-8 bg-muted rounded-full"></div>
+          ))}
+        </div>
+      </div>
+      <div className="mx-auto mt-16 max-w-7xl px-6 lg:px-8">
+        <div className="mx-auto grid max-w-2xl grid-cols-1 gap-x-8 gap-y-20 lg:mx-0 lg:max-w-none lg:grid-cols-3">
+          {[1, 2, 3].map((i) => (
+            <div key={i} className="flex flex-col gap-4">
+              <div className="h-48 bg-muted rounded-lg"></div>
+              <div className="h-4 bg-muted rounded w-1/4"></div>
+              <div className="h-8 bg-muted rounded"></div>
+              <div className="h-20 bg-muted rounded"></div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
 
 export default async function Blog() {
   const posts = await getAllPosts();
@@ -67,7 +99,9 @@ export default async function Blog() {
         </svg>
       </div>
       <Navigation forceWhiteBackground />
-      <ClientBlog initialPosts={posts} initialTags={allTags} />
+      <Suspense fallback={<BlogLoading />}>
+        <ClientBlog initialPosts={posts} initialTags={allTags} />
+      </Suspense>
       <Footer />
     </div>
   );

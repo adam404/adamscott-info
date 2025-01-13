@@ -53,7 +53,12 @@ function ProjectsContent({ projects, allTags }: ProjectsClientProps) {
       <div
         className={`relative ${showUI ? "z-10" : "pointer-events-none"}`}
         onClick={(e) => {
-          if (e.target === e.currentTarget) {
+          // Check if we clicked on an interactive element
+          const target = e.target as HTMLElement;
+          const isInteractive = target.closest(
+            'button, a, input, textarea, article, [role="button"]'
+          );
+          if (!isInteractive) {
             setShowUI((prev) => !prev);
           }
         }}

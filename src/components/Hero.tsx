@@ -2,9 +2,23 @@
 
 import { useEffect } from "react";
 import Link from "next/link";
-import { useAnimate } from "framer-motion";
+import { useAnimate, motion } from "framer-motion";
+import Image from "next/image";
+import { format } from "date-fns";
 
-export default function Hero() {
+interface NewsItem {
+  title: string;
+  description: string;
+  url: string;
+  publishedAt: string;
+  urlToImage: string;
+}
+
+interface HeroProps {
+  news: NewsItem[];
+}
+
+export default function Hero({ news }: HeroProps) {
   const [scope, animate] = useAnimate();
 
   useEffect(() => {
@@ -54,6 +68,44 @@ export default function Hero() {
             >
               View projects <span aria-hidden="true">→</span>
             </Link>
+          </div>
+        </div>
+
+        <div className="mx-auto mt-16 sm:mt-24 lg:ml-10 lg:mt-0 xl:ml-32">
+          <h2 className="text-lg sm:text-2xl lg:text-sm font-semibold mb-4 text-foreground lg:text-muted-foreground">
+            In The News
+          </h2>
+          <div className="flex flex-col sm:flex-row gap-4 w-full lg:w-[240px] scrollbar-none hover:scrollbar pb-4 lg:pb-0 lg:flex-col">
+            {news.map((item, index) => (
+              <motion.a
+                key={item.url}
+                href={item.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="relative flex flex-col overflow-hidden rounded-lg shadow-sm bg-card hover:bg-card/80 transition-colors"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: index * 0.2 }}
+              >
+                <div className="h-32 relative">
+                  <Image
+                    src={item.urlToImage}
+                    alt={item.title}
+                    fill
+                    className="object-cover"
+                    sizes="240px"
+                  />
+                </div>
+                <div className="flex flex-1 flex-col p-3">
+                  <p className="text-[10px] text-muted-foreground">
+                    {format(new Date(item.publishedAt), "MMM d, yyyy")}
+                  </p>
+                  <h3 className="text-xs font-medium mt-1 line-clamp-2 leading-snug">
+                    {item.title}
+                  </h3>
+                </div>
+              </motion.a>
+            ))}
           </div>
         </div>
       </div>

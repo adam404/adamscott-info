@@ -26,6 +26,13 @@ export default function Card({
   tags,
   type,
 }: CardProps) {
+  const getTagLink = (tag: string) => {
+    const encodedTag = encodeURIComponent(tag);
+    return type === "project"
+      ? `/projects?tech=${encodedTag}`
+      : `/blog?tag=${encodedTag}`;
+  };
+
   return (
     <motion.div
       whileHover={{ y: -5 }}
@@ -55,12 +62,13 @@ export default function Card({
           {tags && tags.length > 0 && (
             <div className="flex flex-wrap gap-2 mb-3">
               {tags.map((tag) => (
-                <span
+                <Link
                   key={tag}
-                  className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200"
+                  href={getTagLink(tag)}
+                  className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200 hover:bg-blue-200 dark:hover:bg-blue-800 transition-colors"
                 >
                   {tag}
-                </span>
+                </Link>
               ))}
             </div>
           )}

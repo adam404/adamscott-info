@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useCallback, Suspense } from "react";
+import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import Card from "@/components/Card";
 
 interface ClientBlogProps {
@@ -8,14 +9,35 @@ interface ClientBlogProps {
   initialTags: string[];
 }
 
-export default function ClientBlog({
-  initialPosts,
-  initialTags,
-}: ClientBlogProps) {
-  const [selectedTag, setSelectedTag] = useState<string | null>(null);
+function BlogContent({ initialPosts, initialTags }: ClientBlogProps) {
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const currentTag = searchParams.get("tag");
 
-  const filteredPosts = selectedTag
-    ? initialPosts.filter((post) => post.tags.includes(selectedTag))
+  const createQueryString = useCallback(
+    (name: string, value: string) => {
+      const params = new URLSearchParams(searchParams);
+      if (value) {
+        params.set(name, value);
+      } else {
+        params.delete(name);
+      }
+      return params.toString();
+    },
+    [searchParams]
+  );
+
+  const handleTagClick = (tag: string) => {
+    const newQueryString = createQueryString(
+      "tag",
+      currentTag === tag ? "" : tag
+    );
+    router.push(`${pathname}${newQueryString ? `?${newQueryString}` : ""}`);
+  };
+
+  const filteredPosts = currentTag
+    ? initialPosts.filter((post) => post.tags.includes(currentTag))
     : initialPosts;
 
   return (
@@ -35,35 +57,15 @@ export default function ClientBlog({
 
       {/* Filters */}
       <div className="mx-auto mt-12 max-w-7xl px-6 lg:px-8">
-        <div className="flex flex-wrap gap-2">
-          {selectedTag && (
-            <button
-              onClick={() => setSelectedTag(null)}
-              className="rounded-full bg-purple-600 px-4 py-1.5 text-sm font-semibold leading-6 text-white hover:bg-purple-500 transition-colors duration-200 shadow-sm hover:shadow-md flex items-center gap-2"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-4 w-4"
-                viewBox="0 0 20 20"
-                fill="currentColor"
-              >
-                <path
-                  fillRule="evenodd"
-                  d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                  clipRule="evenodd"
-                />
-              </svg>
-              Clear Filter
-            </button>
-          )}
+        <div className="flex flex-wrap gap-2 justify-center">
           {initialTags.map((tag) => (
             <button
               key={tag}
-              onClick={() => setSelectedTag(tag)}
-              className={`rounded-full px-3 py-1 text-sm font-semibold leading-6 ring-1 ring-inset transition-colors ${
-                selectedTag === tag
-                  ? "bg-primary text-primary-foreground ring-primary"
-                  : "bg-primary/10 text-primary ring-primary/20 hover:bg-primary/20"
+              onClick={() => handleTagClick(tag)}
+              className={`px-3 py-1 rounded-full text-sm ${
+                currentTag === tag
+                  ? "bg-primary text-primary-foreground"
+                  : "bg-muted text-muted-foreground hover:bg-muted/80"
               }`}
             >
               {tag}
@@ -114,5 +116,13 @@ export default function ClientBlog({
         </div>
       </div>
     </main>
+  );
+}
+
+export default function ClientBlog(props: ClientBlogProps) {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <BlogContent {...props} />
+    </Suspense>
   );
 }
