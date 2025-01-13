@@ -159,9 +159,5 @@ function ProjectsContent({ projects, allTags }: ProjectsClientProps) {
 }
 
 export default function ProjectsClient(props: ProjectsClientProps) {
-  return (
-    <Suspense fallback={<div>Loading...</div>}>
-      <ProjectsContent {...props} />
-    </Suspense>
-  );
+  return <ProjectsContent {...props} />;
 }
