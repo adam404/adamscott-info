@@ -8,6 +8,9 @@ pre[class*="language-"] {
   padding: 1.5rem;
   font-size: 0.95rem;
   line-height: 1.6;
+  max-height: 600px; /* Add max height */
+  white-space: pre-wrap; /* Enable text wrapping */
+  word-wrap: break-word; /* Break words if needed */
 }
 
 /* Ensure the code element itself has the same background */
@@ -20,7 +23,8 @@ code[class*="language-"] {
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
   direction: ltr;
   text-align: left;
-  white-space: pre;
+  white-space: pre-wrap; /* Enable text wrapping */
+  word-wrap: break-word; /* Break words if needed */
   word-spacing: normal;
   word-break: normal;
   tab-size: 2;

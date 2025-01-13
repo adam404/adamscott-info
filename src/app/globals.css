@@ -90,10 +90,15 @@
 
 .prose pre {
   @apply border border-neutral-800 bg-neutral-900;
+  max-height: 600px;
+  white-space: pre-wrap;
+  word-wrap: break-word;
 }
 
 .prose code {
   @apply text-neutral-200 px-1 py-0.5 border border-neutral-800 rounded-lg bg-neutral-900;
+  white-space: pre-wrap;
+  word-wrap: break-word;
 }
 
 .prose pre code {
