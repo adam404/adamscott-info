@@ -3,6 +3,34 @@ import Link from "next/link";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
 import { getTestimonials } from "@/lib/content";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "About | Adam Scott - Software Engineer & Technical Leader",
+  description:
+    "Senior Full-Stack Architect with 17+ years of experience specializing in React, component-based design systems, and scalable backend integration. Learn about my journey and expertise in software development.",
+  openGraph: {
+    title: "About | Adam Scott - Software Engineer & Technical Leader",
+    description:
+      "Senior Full-Stack Architect with 17+ years of experience specializing in React, component-based design systems, and scalable backend integration.",
+    type: "website",
+    images: [
+      {
+        url: "/profile.jpg",
+        width: 600,
+        height: 600,
+        alt: "Adam Scott - Software Engineer & Technical Leader",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "About | Adam Scott",
+    description:
+      "Senior Full-Stack Architect with 17+ years of experience in software development and technical leadership.",
+    images: ["/profile.jpg"],
+  },
+};
 
 const timeline = [
   {
