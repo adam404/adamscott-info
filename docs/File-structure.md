@@ -4,81 +4,70 @@
 
 ```markdown
 # File Structure
+```
 
-Below is a simplified overview of the repository layout:
-
-├── Dockerfile
-├── k3s.yaml
-├── package.json
-├── package-lock.json
-├── postcss.config.mjs
-├── tailwind.config.ts
-├── tsconfig.json
-├── README.md
+project-root/
 ├── docs/
-| ├── App-flow.md
-│ ├── Backend-structure.md
-│ ├── File-structure.md
-│ ├── frontend-guidelines.md
-│ ├── PRD.md
-│ └── Tech-stack.md
 ├── public/
-│ ├── blog/
-│ ├── projects/
-│ └── ...
+│ ├── images/
+│ └── fonts/
 ├── src/
 │ ├── app/
 │ │ ├── about/
 │ │ ├── blog/
 │ │ ├── contact/
 │ │ ├── projects/
-│ │ ├── layout.tsx
-│ │ ├── page.tsx
-│ │ └── globals.css
+│ │ └── page.tsx
 │ ├── components/
+│ │ ├── common/
+│ │ ├── layout/
+│ │ └── ui/
 │ ├── content/
 │ │ ├── blog/
 │ │ └── projects/
-│ ├── data/
 │ ├── lib/
-│ ├── styles/
-│ ├── types/
-│ └── utils/
-│ ├── signature/
-│ │ ├── create/
-│ │ ├── verify/
-│ │ └── dashboard/
-│ ├── components/
-│ │ ├── signature/
-│ │ │ ├── Canvas.tsx
-│ │ │ ├── Upload.tsx
-│ │ │ └── AIClone.tsx
-│ ├── lib/
-│ │ ├── signature/
-│ │ │ ├── processing.ts
-│ │ │ ├── verification.ts
-│ │ │ └── storage.ts
-│ │ ├── stripe/
-│ │ │ ├── subscriptions.ts
-│ │ │ └── webhooks.ts
-└── ...
+│ │ ├── utils/
+│ │ └── hooks/
+│ └── styles/
+├── .env
+├── .env.local
+├── next.config.js
+├── package.json
+├── postcss.config.js
+├── tailwind.config.js
+└── tsconfig.json
 
-## Key Directories
+```
 
-- **docs/**  
-  Contains Markdown documentation (like this file).
-- **public/**  
-  Holds static assets (images, fonts, etc.) served from `/`.
-- **src/app/**  
-  Next.js **App Router** directory, hosting route-based folders and page layout structures.
-- **src/components/**  
-  Shared UI components (e.g., navigation, hero sections, cards).
-- **src/content/**  
-  Markdown or MDX files for blog posts and project pages.
-- **src/styles/**  
-  Global or additional CSS if needed beyond Tailwind.
-- **Dockerfile**  
-  Instructions for building the Docker image.
-- **k3s.yaml**  
-  K3s or Kubernetes deployment manifest.
+## Directory Explanation
+
+### `/docs`
+Contains project documentation and guidelines.
+
+### `/public`
+Static assets served directly by Next.js.
+
+### `/src/app`
+Next.js 14 App Router pages and layouts.
+
+### `/src/components`
+Reusable React components.
+
+### `/src/content`
+MDX content for blog posts and projects.
+
+### `/src/lib`
+Utility functions and custom hooks.
+
+### `/src/styles`
+Global styles and Tailwind CSS configuration.
+
+### Configuration Files
+- `.env`: Environment variables template
+- `.env.local`: Local environment variables
+- `next.config.js`: Next.js configuration
+- `package.json`: Dependencies and scripts
+- `postcss.config.js`: PostCSS configuration
+- `tailwind.config.js`: Tailwind CSS configuration
+- `tsconfig.json`: TypeScript configuration
 ```

@@ -1,43 +1,41 @@
 # Backend Structure
 
-Our portfolio site uses Markdown (and optionally WordPress for certain data) as a backend to power blog posts and project content.
+This document outlines the backend structure of the portfolio website, which primarily uses MDX for content management.
 
-## 1. Markdown Files
+## 1. Content Management
 
-- **Blog Posts**: Stored as Markdown/MDX in `src/content/blog/`.
-- **Project Descriptions**: Stored similarly in `src/content/projects/`.
+- **Blog Posts**: MDX files in `src/content/blog`
+- **Projects**: MDX files in `src/content/projects`
+- **Static Assets**: Stored in `public` directory
 
-Each Markdown file typically includes:
-```yaml
----
-title: "Blog Post Title"
-date: "YYYY-MM-DD"
-categories: ["Next.js", "Tailwind"]
-excerpt: "Short description of this blog post..."
-featuredImage: "/blog/my-post-image.png"
----
+## 2. API Routes
 
+/api/contact:
 
-# Backend Structure
+- POST /send: Send contact form messages
 
-[Previous content remains, adding new section:]
+## 3. Data Storage
 
-## 2. Electronic Signature Service
+- **Content**: MDX files in the repository
+- **Assets**: Static files in public directory
+- **Contact Messages**: Handled through email service
 
-### Storage
-- **Documents**: Encrypted S3 bucket for document storage
-- **Signatures**: Separate encrypted storage for signature data
-- **Audit Logs**: Immutable audit trail in separate database
+## 4. Security
 
-### API Endpoints
+- Rate limiting on API endpoints
+- Input validation
+- CORS configuration
+- Environment variables for sensitive data
 
-/api/signatures:
-    POST /create: Create new signature
-    POST /clone: AI-powered signature cloning
-    GET /verify/{id}: Verify signature authenticity
-/api/documents:
-    POST /upload: Upload document for signing
-    POST /sign: Apply signature to document
-    GET /download/{id}: Retrieve signed document
+## 5. Performance
 
-    
+- Static site generation (SSG) for content pages
+- Image optimization
+- CDN integration
+- Caching strategies
+
+## 6. Monitoring
+
+- Vercel Analytics integration
+- Error tracking
+- Performance monitoring

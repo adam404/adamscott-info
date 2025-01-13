@@ -1,92 +1,70 @@
 # Application Flow
 
-This document explains the high-level flow of our Next.js application as it runs on a k3s cluster in AWS Lightsail.
+This document explains the high-level flow of the Next.js 14 portfolio website.
 
 ## Overview
 
 1. **Incoming HTTP Request**
 
-   - A user navigates to the domain (e.g., `your-domain.com`).
-   - The request is routed through the Nginx Ingress Controller on the k3s cluster.
+   - A user navigates to adamscott.info
+   - The request is handled by Next.js 14's App Router
 
-2. **Ingress & Service Routing**
+2. **Page Routing & Rendering**
 
-   - The Ingress forwards traffic to the `nextjs-service`, which is a Kubernetes Service of type NodePort (or LoadBalancer).
-   - The Service routes traffic to the running Next.js Pods (managed by `nextjs-deployment`).
+   - The App Router determines which page component to render based on the URL
+   - Pages are organized in the `src/app` directory following Next.js 14 conventions
+   - Each route can have its own loading, error, and layout components
 
-3. **Next.js SSR & Data Fetching**
+3. **Content Management**
 
-   - When a page is requested, Next.js handles server-side rendering (SSR) if required.
-   - It fetches any needed content from the Markdown-based backend or any external APIs.
-   - Generates the HTML and sends it back through the Ingress to the client’s browser.
+   - Content is primarily managed through MDX files in the `src/content` directory
+   - Projects, blog posts, and other content are written in MDX format
+   - MDX allows for rich content with React components embedded in markdown
 
-4. **Client-Side Hydration**
+4. **Server Components & Data Fetching**
 
-   - Once the HTML is loaded in the browser, React hydrates the page, enabling interactive components.
-   - Subsequent navigations often leverage client-side transitions (using the Next.js router).
+   - Next.js Server Components are used by default for improved performance
+   - Content is statically generated at build time where possible
+   - Dynamic content fetching occurs server-side when needed
 
-5. **Caching & Optimizations**
+5. **Client Interactions**
 
-   - Images are optimized on-the-fly.
-   - Static assets (e.g., CSS, JS) can be cached via the CDN or Lightsail settings.
-   - Separate signature processing from main application
-   - Queue-based processing for large documents
-   - Redis caching layer for frequent operations
-   - CDN caching for static assets
+   - Interactive components are client-side rendered using React 19
+   - Smooth page transitions are handled by Next.js with client-side navigation
+   - Framer Motion is used for animations and transitions
 
-6. **Logging & Monitoring**
-   - Application logs are aggregated (Fluentd/EFK stack or any other solution).
-   - Metrics are available via Prometheus & Grafana.
+6. **Performance & Optimization**
+   - Images are automatically optimized using Next.js Image component
+   - Static assets are served through the CDN
+   - Analytics are tracked using Vercel Analytics
+   - TypeScript ensures type safety throughout the application
 
-## Electronic Signature Flow
+## Key Features
 
-1. **Document Upload**
+- MDX-based content management
+- Server Components for optimal performance
+- Responsive design with Tailwind CSS
+- Modern UI components with Headless UI
+- Type-safe development with TypeScript
+- Beautiful animations with Framer Motion
+- Contact form with React Email
+- Analytics integration
 
-   - User uploads PDF document
-   - System validates format and scans for malware
-   - Document is encrypted at rest
+## System Architecture
 
-2. **Signature Creation**
+```
+User Request
+    ↓
+CDN (Static Assets)
+    ↓
+Next.js App Router
+    ↓
+Server Components
+    ↙     ↘
+Static Content   Dynamic Content
+(MDX files)      (API Routes)
+    ↘     ↙
+Client Hydration
+```
 
-   - Options presented:
-     - Draw signature
-     - Upload existing
-     - AI clone (premium feature)
-   - Preview and adjust signature
-
-3. **Payment & Processing**
-
-   - Verify subscription status
-   - Process payment if needed (Stripe)
-   - Apply watermark with unique identifier
-   - Generate audit trail
-
-4. **Document Delivery**
-
-   - Signed document delivered via secure link
-   - Email notifications sent
-   - Audit log updated
-
-5. **Future Enhancements**
-
-   - Bulk signature processing
-   - Team collaboration features
-   - Document templates
-   - API access for enterprise customers
-   - Multi-language support
-   - Mobile-optimized signature capture
-
-## Diagram
-
-User -> Ingress -> nextjs-service -> nextjs-deployment (Pods) (SSL/TLS) (NodePort) (Next.js containers)
-
-This flow ensures scalability (multiple replicas of Next.js Pods), load balancing (via the k3s Service), and simple external access (through Nginx Ingress).
-
-## Updated System Diagram
-
-User -> CloudFront -> API Gateway -> Lambda@Edge
--> S3 (static assets)
--> ECS/k3s (Next.js)
--> Lambda (signature processing)
--> DynamoDB (metadata)
--> S3 (encrypted documents)
+This architecture ensures optimal performance, great SEO, and a smooth user experience while maintaining developer productivity and code maintainability.

@@ -1,95 +1,100 @@
-# Tech Stack
+# Technology Stack
 
-Here’s a high-level view of the technologies used in our Next.js portfolio project on k3s.
+This document outlines the technology stack used in the portfolio website.
 
-## 1. Core Frameworks & Libraries
+## 1. Frontend Framework
 
-- **Next.js**
-  - Server-side rendering (SSR) and static site generation (SSG).
-  - App Router architecture for route-based structuring.
-- **React**
-  - UI library powering component-based development.
+- **Next.js 14**
+
+  - App Router
+  - Server Components
+  - Static Site Generation (SSG)
+  - Image Optimization
+
+- **React 19**
+  - Server Components
+  - Client Components
+  - Hooks
+  - Context API
+
+## 2. Styling
+
 - **Tailwind CSS**
-  - Utility-first CSS framework for rapid UI development.
+
+  - Custom configuration
+  - Typography plugin
+  - Forms plugin
+
+- **Framer Motion**
+  - Page transitions
+  - Component animations
+  - Scroll animations
+
+## 3. Content Management
+
+- **MDX**
+
+  - Blog posts
+  - Project descriptions
+  - Custom components in markdown
+
+- **Gray Matter**
+  - Frontmatter parsing
+  - Metadata extraction
+
+## 4. Development Tools
+
 - **TypeScript**
-  - Strongly-typed JavaScript for safer code.
 
-## 2. Kubernetes & Containerization
-
-- **k3s**
-  - Lightweight Kubernetes distribution running on AWS Lightsail.
-- **Docker**
-  - Containerizes the Next.js application for consistency across environments.
-
-## 3. Markdown/WordPress Backend
-
-- **Markdown (MD/MDX)**
-  - Simple file-based content management for blog posts, project pages, etc.
-- **(Optional) WordPress**
-  - REST or GraphQL API for fetching content if a more robust CMS is needed.
-
-## 4. AWS & Infrastructure
-
-- **AWS Lightsail**
-  - Simplified VPS hosting for the k3s cluster.
-- **Networking & Security**
-  - Nginx Ingress Controller for traffic routing.
-  - Cert-Manager for TLS/HTTPS certificates.
-
-## 5. CI/CD
-
-- **GitHub Actions**
-  - Automates Docker image builds and Kubernetes deployments.
-- **Docker Hub** (or ECR)
-  - Hosts built container images.
-
-## 6. Monitoring & Logging
-
-- **Prometheus & Grafana**
-  - Collects metrics and visualizes system/application performance.
-- **EFK Stack** (Elasticsearch, Fluentd, Kibana) or **Fluent-bit**
-  - Aggregates logs for centralized viewing.
-
-## 7. Additional Tools
+  - Type safety
+  - Enhanced IDE support
+  - Better developer experience
 
 - **ESLint & Prettier**
-  - Ensures a consistent, high-quality codebase.
-- **Framer Motion**
-  - Animation library for smooth UI interactions.
-- **Google Analytics 4**
-  - Tracks user behavior and site performance.
+  - Code quality
+  - Consistent formatting
+  - Best practices enforcement
 
+## 5. UI Components
 
-8. Electronic Signature Components
+- **Headless UI**
 
-- **Signature Capture**
-  - Canvas API for drawing
-  - SignaturePad.js for smooth input
-  - TensorFlow.js for signature cloning
+  - Accessible components
+  - Modal dialogs
+  - Dropdowns
 
-- **Document Processing**
-  - PDF.js for document handling
-  - ImageMagick for watermarking
-  - AWS S3 for secure storage
+- **Heroicons**
+  - Icon system
+  - SVG optimization
 
-- **Payment Processing**
-  - Stripe Elements
-  - Stripe Subscription API
-  - Webhook handlers
+## 6. Performance & Analytics
 
-## 9. Security & Compliance
+- **Vercel Analytics**
+  - Real-time metrics
+  - Performance monitoring
+  - User behavior tracking
 
-- **Document Security**
-  - AES-256 encryption
-  - Digital watermarking
-  - Audit logging
-  - AWS KMS for key management
-  - AWS WAF for API protection
-  - Rate limiting on signature endpoints
-  - Document versioning
-  - Multi-region backup strategy
+## 7. Contact Form
 
-- **Payment Security**
-  - PCI DSS compliance
-  - Stripe Elements integration
-  - 3D Secure authentication
+- **React Email**
+  - Email templates
+  - Contact form handling
+  - Responsive design
+
+## 8. Development Environment
+
+- **Node.js**
+- **pnpm/npm/yarn**
+- **Git**
+- **VS Code**
+  - ESLint extension
+  - Prettier extension
+  - Tailwind CSS IntelliSense
+
+## 9. Deployment
+
+- **Vercel**
+  - Continuous deployment
+  - Edge functions
+  - CDN
+  - SSL/TLS
