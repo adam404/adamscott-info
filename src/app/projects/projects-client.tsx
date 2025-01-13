@@ -159,5 +159,9 @@ function ProjectsContent({ projects, allTags }: ProjectsClientProps) {
 }
 
 export default function ProjectsClient(props: ProjectsClientProps) {
-  return <ProjectsContent {...props} />;
+  return (
+    <Suspense>
+      <ProjectsContent {...props} />
+    </Suspense>
+  );
 }
