@@ -98,19 +98,17 @@ function ProjectsContent({ projects, allTags }: ProjectsClientProps) {
                 {/* Projects grid */}
                 <div className="mx-auto mt-16 grid max-w-2xl grid-cols-1 gap-x-8 gap-y-20 lg:mx-0 lg:max-w-none lg:grid-cols-3">
                   {filteredProjects.map((project) => (
-                    <Link
-                      key={project.slug}
-                      href={`/p/${project.slug}`}
-                      className="group"
-                    >
+                    <div key={project.slug} className="group">
                       <article className="flex flex-col items-start">
-                        <div className="relative w-full">
-                          <ProjectVideo
-                            video={project.video}
-                            image={project.image}
-                            title={project.title}
-                          />
-                        </div>
+                        <Link href={`/p/${project.slug}`} className="w-full">
+                          <div className="relative w-full">
+                            <ProjectVideo
+                              video={project.video}
+                              image={project.image}
+                              title={project.title}
+                            />
+                          </div>
+                        </Link>
                         <div className="max-w-xl">
                           <div className="mt-8 flex items-center gap-x-4 text-xs">
                             <time
@@ -125,27 +123,30 @@ function ProjectsContent({ projects, allTags }: ProjectsClientProps) {
                               </span>
                             )}
                           </div>
-                          <div className="relative">
-                            <h3 className="mt-3 text-lg font-semibold leading-6 text-foreground group-hover:text-primary transition-colors">
-                              {project.title}
-                            </h3>
-                            <p className="mt-5 text-sm leading-6 text-muted-foreground">
-                              {project.description}
-                            </p>
-                          </div>
+                          <Link href={`/p/${project.slug}`} className="block">
+                            <div className="relative">
+                              <h3 className="mt-3 text-lg font-semibold leading-6 text-foreground group-hover:text-primary transition-colors">
+                                {project.title}
+                              </h3>
+                              <p className="mt-5 text-sm leading-6 text-muted-foreground">
+                                {project.description}
+                              </p>
+                            </div>
+                          </Link>
                           <div className="mt-4 flex flex-wrap gap-2">
                             {project.tech.map((tech) => (
-                              <span
+                              <button
                                 key={tech}
-                                className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-secondary text-secondary-foreground"
+                                onClick={() => handleTagClick(tech)}
+                                className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-secondary text-secondary-foreground hover:bg-secondary/80 transition-colors"
                               >
                                 {tech}
-                              </span>
+                              </button>
                             ))}
                           </div>
                         </div>
                       </article>
-                    </Link>
+                    </div>
                   ))}
                 </div>
               </div>
