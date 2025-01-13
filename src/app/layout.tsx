@@ -3,14 +3,11 @@ import { GeistSans } from "geist/font/sans";
 import { GeistMono } from "geist/font/mono";
 import { Alata } from "next/font/google";
 import { Analytics } from "@vercel/analytics/react";
-import Navigation from "@/components/Navigation";
-import {
-  GoogleTagManagerScript,
-  GoogleTagManagerNoScript,
-} from "@/components/GoogleTagManager";
+
 import { siteConfig } from "@/lib/config";
 import "./globals.css";
 import "../styles/prism.css";
+import Script from "next/script";
 
 const alata = Alata({
   weight: ["400"],
@@ -18,6 +15,8 @@ const alata = Alata({
   display: "swap",
   variable: "--font-alata",
 });
+
+const GA_MEASUREMENT_ID = "G-HRK6WNGLLZ";
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteConfig.url),
@@ -84,10 +83,20 @@ export default function RootLayout({
       className={`${GeistSans.variable} ${GeistMono.variable} ${alata.variable}`}
     >
       <head>
-        <GoogleTagManagerScript />
+        <Script
+          src={`https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`}
+          strategy="afterInteractive"
+        />
+        <Script id="google-analytics" strategy="afterInteractive">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', '${GA_MEASUREMENT_ID}');
+          `}
+        </Script>
       </head>
       <body className={GeistSans.className}>
-        <GoogleTagManagerNoScript />
         <main>{children}</main>
         <Analytics />
       </body>
