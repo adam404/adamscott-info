@@ -86,7 +86,7 @@ export default function RootLayout({
       <head>
         <GoogleTagManagerScript />
       </head>
-      <body className={alata.className}>
+      <body className={GeistSans.className}>
         <GoogleTagManagerNoScript />
         <main>{children}</main>
         <Analytics />
