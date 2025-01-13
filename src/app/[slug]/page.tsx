@@ -11,6 +11,7 @@ import Footer from "@/components/Footer";
 import CodeBlock from "@/components/CodeBlock";
 import InlineCode from "@/components/InlineCode";
 import type { Metadata } from "next/types";
+import Link from "next/link";
 
 const components = {
   table: (props: any) => (
@@ -131,10 +132,43 @@ export async function generateMetadata(props: {
   }
 }
 
+interface BlogPost {
+  title: string;
+  description: string;
+  date: string;
+  featuredImage?: string;
+  slug: string;
+}
+
 async function getBlogPost(slug: string) {
   const filePath = path.join(process.cwd(), "src/content/blog", `${slug}.mdx`);
   const source = await fs.readFile(filePath, "utf8");
   const { data, content } = matter(source);
+
+  // Get all blog posts to find adjacent ones
+  const blogDir = path.join(process.cwd(), "src/content/blog");
+  const files = await fs.readdir(blogDir);
+  const posts = await Promise.all(
+    files
+      .filter((file) => file.endsWith(".mdx"))
+      .map(async (file) => {
+        const source = await fs.readFile(path.join(blogDir, file), "utf8");
+        const { data } = matter(source);
+        return {
+          ...(data as BlogPost),
+          slug: file.replace(/\.mdx$/, ""),
+        };
+      })
+  );
+
+  // Sort posts by date
+  posts.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+
+  // Find current post index
+  const currentIndex = posts.findIndex((post) => post.slug === slug);
+  const prevPost =
+    currentIndex < posts.length - 1 ? posts[currentIndex + 1] : null;
+  const nextPost = currentIndex > 0 ? posts[currentIndex - 1] : null;
 
   const { content: mdxContent } = await compileMDX({
     source: content,
@@ -148,7 +182,7 @@ async function getBlogPost(slug: string) {
     },
   });
 
-  return { data, mdxContent };
+  return { data, mdxContent, prevPost, nextPost };
 }
 
 export default async function BlogPost(props: {
@@ -164,7 +198,7 @@ export default async function BlogPost(props: {
   }
 
   try {
-    const { data, mdxContent } = await getBlogPost(slug);
+    const { data, mdxContent, prevPost, nextPost } = await getBlogPost(slug);
 
     return (
       <article className="relative">
@@ -193,6 +227,37 @@ export default async function BlogPost(props: {
         <div className="relative -mt-32 bg-gray-900 rounded-t-3xl">
           <div className="mx-auto max-w-4xl px-6 py-16">
             <div className="prose prose-invert max-w-none">{mdxContent}</div>
+
+            {/* Post Navigation */}
+            <nav className="mt-16 border-t border-gray-700 pt-8 grid grid-cols-1 md:grid-cols-2 gap-8">
+              {prevPost && (
+                <Link
+                  href={`/${prevPost.slug}`}
+                  className="group flex flex-col space-y-3"
+                >
+                  <span className="text-sm text-gray-400">
+                    Previous Article
+                  </span>
+                  <span className="font-semibold text-gray-200 group-hover:text-blue-400 transition-colors">
+                    {prevPost.title}
+                  </span>
+                </Link>
+              )}
+
+              {nextPost && (
+                <Link
+                  href={`/${nextPost.slug}`}
+                  className={`group flex flex-col space-y-3 ${
+                    !prevPost ? "md:col-start-2" : ""
+                  }`}
+                >
+                  <span className="text-sm text-gray-400">Next Article</span>
+                  <span className="font-semibold text-gray-200 group-hover:text-blue-400 transition-colors">
+                    {nextPost.title}
+                  </span>
+                </Link>
+              )}
+            </nav>
           </div>
         </div>
         <Footer dark />
