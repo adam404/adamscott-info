@@ -16,7 +16,7 @@ const alata = Alata({
   variable: "--font-alata",
 });
 
-const GA_MEASUREMENT_ID = "G-HRK6WNGLLZ";
+const GA_MEASUREMENT_ID = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID;
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteConfig.url),
