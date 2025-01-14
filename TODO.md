@@ -2,13 +2,7 @@
 
 ## Documentation Updates
 
-1. **Package Manager**
-
-   - Update Tech-stack.md to specify Yarn as the package manager
-   - Document Yarn-specific commands and workflows
-   - Add Yarn version requirements
-
-2. **Deployment Process**
+1. **Deployment Process**
    - Document Vercel deployment setup
    - Add environment variables configuration for Vercel
    - Document preview deployment workflow

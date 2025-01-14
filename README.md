@@ -1,6 +1,6 @@
 # Adam Scott's Portfolio Website
 
-A modern Next.js portfolio website with MDX blog posts, projects showcase, and electronic signature service.
+A modern Next.js portfolio website with MDX blog posts and projects showcase. Built with performance and developer experience in mind.
 
 ## Table of Contents
 
@@ -11,6 +11,7 @@ A modern Next.js portfolio website with MDX blog posts, projects showcase, and e
 - [Project Structure](#project-structure)
 - [Features](#features)
 - [Technologies](#technologies)
+- [Documentation](#documentation)
 
 ## Prerequisites
 
@@ -65,8 +66,6 @@ Required environment variables:
 
 ```env
 NEXT_PUBLIC_SITE_URL=your-site-url
-NEXT_PUBLIC_STRIPE_PUBLIC_KEY=your-stripe-key
-ELECTRONIC_SIGNATURE_API_KEY=your-api-key
 ```
 
 ## Deployment
@@ -79,11 +78,7 @@ This project is deployed on Vercel. The deployment process is automated through 
 2. Vercel automatically creates preview deployments for PRs
 3. Merging to main triggers production deployment
 
-### Environment Configuration
-
-1. Add environment variables in Vercel dashboard
-2. Configure build settings if needed
-3. Set up custom domain if required
+For more details, see [App-flow.md](docs/App-flow.md).
 
 ## Project Structure
 
@@ -100,6 +95,8 @@ project-root/
 └── tests/          # Test files
 ```
 
+For detailed structure information, see [File-structure.md](docs/File-structure.md).
+
 ## Features
 
 - **Blog Platform**
@@ -113,12 +110,6 @@ project-root/
   - Portfolio gallery
   - Case studies
   - Live demos
-
-- **Electronic Signature Service**
-
-  - Digital signature creation
-  - Document handling
-  - Subscription tiers
 
 - **Performance**
   - Static Site Generation
@@ -136,7 +127,18 @@ project-root/
 - **Package Manager**: Yarn
 - **Testing**: Jest & Testing Library
 - **Analytics**: Vercel Analytics
-- **Payment Processing**: Stripe
+
+For complete technology details, see [Tech-stack.md](docs/Tech-stack.md).
+
+## Documentation
+
+Comprehensive documentation is available in the `docs` directory:
+
+- [Tech Stack](docs/Tech-stack.md) - Complete technology stack details
+- [Frontend Guidelines](docs/frontend-guidelines.md) - Code style and best practices
+- [File Structure](docs/File-structure.md) - Project organization
+- [App Flow](docs/App-flow.md) - Application architecture and flow
+- [PRD](docs/PRD.md) - Product requirements and specifications
 
 ## License
 

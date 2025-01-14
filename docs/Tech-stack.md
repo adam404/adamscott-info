@@ -11,7 +11,7 @@ This document outlines the technology stack used in the portfolio website.
   - Static Site Generation (SSG)
   - Image Optimization
 
-- **React 19**
+- **React 18**
   - Server Components
   - Client Components
   - Hooks
@@ -83,18 +83,20 @@ This document outlines the technology stack used in the portfolio website.
 
 ## 8. Development Environment
 
-- **Node.js**
-- **pnpm/npm/yarn**
+- **Node.js** (LTS version)
+- **Yarn** (package manager)
 - **Git**
 - **VS Code**
   - ESLint extension
   - Prettier extension
   - Tailwind CSS IntelliSense
 
-## 9. Deployment
+## 9. Deployment & Infrastructure
 
 - **Vercel**
   - Continuous deployment
   - Edge functions
   - CDN
   - SSL/TLS
+  - Automatic preview deployments
+  - Zero-downtime updates
