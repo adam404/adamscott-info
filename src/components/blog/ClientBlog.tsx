@@ -133,7 +133,7 @@ function BlogContent({ initialPosts, initialTags }: ClientBlogProps) {
 
 export default function ClientBlog(props: ClientBlogProps) {
   return (
-    <Suspense fallback={<div>Loading...</div>}>
+    <Suspense fallback={<div></div>}>
       <BlogContent {...props} />
     </Suspense>
   );
