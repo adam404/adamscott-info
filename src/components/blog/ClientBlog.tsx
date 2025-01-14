@@ -47,6 +47,18 @@ function BlogContent({ initialPosts, initialTags }: ClientBlogProps) {
         <div className="mx-auto max-w-2xl text-center">
           <h1 className="text-4xl font-bold tracking-tight text-foreground sm:text-6xl">
             Blog
+            {currentTag && (
+              <span className="ml-3 inline-flex items-center px-3 py-1 text-sm font-medium rounded-full bg-primary/10 text-primary">
+                Filtered by {currentTag}
+                <button
+                  onClick={() => handleTagClick(currentTag)}
+                  className="ml-2 hover:text-primary/80"
+                  aria-label="Clear filter"
+                >
+                  ×
+                </button>
+              </span>
+            )}
           </h1>
           <p className="mt-6 text-lg leading-8 text-muted-foreground">
             Thoughts and insights on software development, leadership, and

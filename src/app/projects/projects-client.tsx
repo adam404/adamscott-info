@@ -72,6 +72,18 @@ function ProjectsContent({ projects, allTags }: ProjectsClientProps) {
                 <div className="mx-auto max-w-2xl text-center">
                   <h2 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
                     Projects
+                    {currentTag && (
+                      <span className="ml-3 inline-flex items-center px-3 py-1 text-sm font-medium rounded-full bg-primary/10 text-primary">
+                        Filtered by {currentTag}
+                        <button
+                          onClick={() => handleTagClick(currentTag)}
+                          className="ml-2 hover:text-primary/80"
+                          aria-label="Clear filter"
+                        >
+                          ×
+                        </button>
+                      </span>
+                    )}
                   </h2>
                   <p className="mt-2 text-lg leading-8 text-muted-foreground">
                     A collection of my professional work and side projects
