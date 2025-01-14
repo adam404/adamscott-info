@@ -45,10 +45,10 @@ function BlogContent({ initialPosts, initialTags }: ClientBlogProps) {
       {/* Header */}
       <div className="px-6 pt-32 sm:pt-40 lg:px-8">
         <div className="mx-auto max-w-2xl text-center">
-          <h1 className="text-4xl font-bold tracking-tight text-foreground sm:text-6xl">
+          <h1 className="text-4xl font-bold tracking-wider text-foreground sm:text-6xl">
             Blog
             {currentTag && (
-              <span className="ml-3 inline-flex items-center px-3 py-1 text-sm font-medium rounded-full bg-primary/10 text-primary">
+              <span className="ml-3 inline-flex items-center px-3 py-1 text-sm font-medium tracking-wider rounded-full bg-primary/10 text-primary">
                 Filtered by {currentTag}
                 <button
                   onClick={() => handleTagClick(currentTag)}

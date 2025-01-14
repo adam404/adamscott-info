@@ -70,10 +70,10 @@ function ProjectsContent({ projects, allTags }: ProjectsClientProps) {
             <div className="py-24 sm:py-32">
               <div className="mx-auto max-w-7xl px-6 lg:px-8">
                 <div className="mx-auto max-w-2xl text-center">
-                  <h2 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
+                  <h2 className="text-3xl font-bold tracking-wider text-foreground sm:text-4xl">
                     Projects
                     {currentTag && (
-                      <span className="ml-3 inline-flex items-center px-3 py-1 text-sm font-medium rounded-full bg-primary/10 text-primary">
+                      <span className="ml-3 inline-flex items-center px-3 py-1 text-sm font-medium tracking-wider rounded-full bg-primary/10 text-primary">
                         Filtered by {currentTag}
                         <button
                           onClick={() => handleTagClick(currentTag)}
