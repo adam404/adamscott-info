@@ -1,0 +1,26 @@
+name: Validate URLs
+
+on:
+  deployment_status:
+    branches:
+      - main
+
+jobs:
+  validate:
+    if: github.event.deployment_status.state == 'success'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: "18"
+
+      - name: Install dependencies
+        run: yarn install
+
+      - name: Validate URLs
+        run: yarn validate-urls
+        env:
+          NEXT_PUBLIC_SITE_URL: ${{ github.event.deployment_status.target_url }}

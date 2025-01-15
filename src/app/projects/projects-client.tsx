@@ -3,22 +3,25 @@
 import { Suspense, useCallback, useEffect, useState } from "react";
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import Link from "next/link";
-import { Project } from "./page";
+import type { ContentItem } from "@/lib/content";
 import ProjectVideo from "@/components/ProjectVideo";
 import Navigation from "@/components/Navigation";
 import AsteroidsBackground from "@/components/AsteroidsBackground";
 import Footer from "@/components/Footer";
 
 interface ProjectsClientProps {
-  projects: Project[];
-  allTags: string[];
+  initialProjects: ContentItem[];
+  initialTags: string[];
 }
 
-function ProjectsContent({ projects, allTags }: ProjectsClientProps) {
+function ProjectsContent({
+  initialProjects,
+  initialTags,
+}: ProjectsClientProps) {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
-  const currentTag = searchParams.get("tech");
+  const currentTag = searchParams.get("tag");
   const [showUI, setShowUI] = useState(true);
 
   const createQueryString = useCallback(
@@ -35,12 +38,12 @@ function ProjectsContent({ projects, allTags }: ProjectsClientProps) {
   );
 
   const filteredProjects = currentTag
-    ? projects.filter((project) => project.tech.includes(currentTag))
-    : projects;
+    ? initialProjects.filter((project) => project.tags.includes(currentTag))
+    : initialProjects;
 
   const handleTagClick = (tag: string) => {
     const newQueryString = createQueryString(
-      "tech",
+      "tag",
       currentTag === tag ? "" : tag
     );
     router.push(`${pathname}${newQueryString ? `?${newQueryString}` : ""}`);
@@ -92,13 +95,13 @@ function ProjectsContent({ projects, allTags }: ProjectsClientProps) {
 
                 {/* Tags filter */}
                 <div className="mt-8 flex flex-wrap gap-2 justify-center">
-                  {allTags.map((tag) => (
+                  {initialTags.map((tag) => (
                     <button
                       key={tag}
                       onClick={() => handleTagClick(tag)}
                       className={`px-3 py-1 rounded-full text-sm ${
                         currentTag === tag
-                          ? "bg-primary text-primary-foreground"
+                          ? "bg-primary text-primary-foreground hover:bg-primary/90"
                           : "bg-muted text-muted-foreground hover:bg-muted/80"
                       }`}
                     >
@@ -146,13 +149,13 @@ function ProjectsContent({ projects, allTags }: ProjectsClientProps) {
                             </div>
                           </Link>
                           <div className="mt-4 flex flex-wrap gap-2">
-                            {project.tech.map((tech) => (
+                            {project.tags.map((tag) => (
                               <button
-                                key={tech}
-                                onClick={() => handleTagClick(tech)}
+                                key={tag}
+                                onClick={() => handleTagClick(tag)}
                                 className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-secondary text-secondary-foreground hover:bg-secondary/80 transition-colors"
                               >
-                                {tech}
+                                {tag}
                               </button>
                             ))}
                           </div>

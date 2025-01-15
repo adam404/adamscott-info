@@ -15,7 +15,7 @@ Create a modern, high-performance portfolio website that:
 - **Frontend**: Next.js + Tailwind CSS
 - **Content**: Git-based MDX content management
 - **Infrastructure**: Vercel deployment platform
-- **Analytics**: Vercel Analytics integration
+- **Analytics**: Vercel Analytics integration and Google Analytics
 
 ## 3. Key Features
 

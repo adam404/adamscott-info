@@ -5,7 +5,7 @@ import { compileMDX } from "next-mdx-remote/rsc";
 import remarkGfm from "remark-gfm";
 import React from "react";
 
-interface ContentItem {
+export interface ContentItem {
   title: string;
   description: string;
   date: string;
@@ -114,7 +114,7 @@ async function getContentFromDirectory(
           image: data.featuredImage || data.image,
           video: data.video,
           featured: data.featured || false,
-          tags: data.tags || [],
+          tags: data.tech || data.tags || [],
           slug: file.replace(".mdx", ""),
           content,
         };
@@ -137,6 +137,10 @@ export async function getFeaturedPosts(limit = 3): Promise<ContentItem[]> {
 
 export async function getAllPosts(): Promise<ContentItem[]> {
   return getContentFromDirectory("src/content/blog", false);
+}
+
+export async function getAllProjects(): Promise<ContentItem[]> {
+  return getContentFromDirectory("src/content/projects", false);
 }
 
 export async function getFeaturedProjects(limit = 3): Promise<ContentItem[]> {
