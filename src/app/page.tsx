@@ -4,7 +4,6 @@ import Link from "next/link";
 import Card from "@/components/Card";
 import Navigation from "@/components/Navigation";
 import Hero from "@/components/Hero";
-import Footer from "@/components/Footer";
 import NewsSection from "@/components/NewsSection";
 import { getFeaturedPosts, getFeaturedProjects } from "@/lib/content";
 import { getNews } from "@/lib/getNews";
@@ -126,8 +125,6 @@ export default async function HomePage() {
           </div>
         </div>
       </div>
-
-      <Footer />
     </div>
   );
 }

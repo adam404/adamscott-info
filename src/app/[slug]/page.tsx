@@ -7,7 +7,6 @@ import remarkGfm from "remark-gfm";
 import rehypePrism from "rehype-prism-plus";
 import Image from "next/image";
 import Navigation from "@/components/Navigation";
-import Footer from "@/components/Footer";
 import CodeBlock from "@/components/CodeBlock";
 import InlineCode from "@/components/InlineCode";
 import type { Metadata } from "next/types";
@@ -260,7 +259,6 @@ export default async function BlogPost(props: {
             </nav>
           </div>
         </div>
-        <Footer dark />
       </article>
     );
   } catch (error) {

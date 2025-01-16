@@ -3,6 +3,7 @@ import { GeistSans } from "geist/font/sans";
 import { GeistMono } from "geist/font/mono";
 import { Alata } from "next/font/google";
 import { Analytics } from "@vercel/analytics/react";
+import Footer from "@/components/Footer";
 
 import { siteConfig } from "@/lib/config";
 import "./globals.css";
@@ -96,8 +97,9 @@ export default function RootLayout({
           `}
         </Script>
       </head>
-      <body className={GeistSans.className}>
-        <main>{children}</main>
+      <body className={`${GeistSans.className} flex min-h-screen flex-col`}>
+        <main className="flex-1">{children}</main>
+        <Footer />
         <Analytics />
       </body>
     </html>

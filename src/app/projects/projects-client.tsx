@@ -7,7 +7,6 @@ import type { ContentItem } from "@/lib/content";
 import ProjectVideo from "@/components/ProjectVideo";
 import Navigation from "@/components/Navigation";
 import AsteroidsBackground from "@/components/AsteroidsBackground";
-import Footer from "@/components/Footer";
 
 interface ProjectsClientProps {
   initialProjects: ContentItem[];
@@ -57,7 +56,6 @@ function ProjectsContent({
       <div
         className={`relative ${showUI ? "z-10" : "pointer-events-none"}`}
         onClick={(e) => {
-          // Check if we clicked on an interactive element
           const target = e.target as HTMLElement;
           const isInteractive = target.closest(
             'button, a, input, textarea, article, [role="button"]'
@@ -166,7 +164,6 @@ function ProjectsContent({
                 </div>
               </div>
             </div>
-            <Footer />
           </>
         )}
       </div>

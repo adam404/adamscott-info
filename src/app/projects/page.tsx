@@ -25,12 +25,8 @@ export const metadata: Metadata = {
 export default async function Page() {
   const projects = await getAllProjects();
   const allTags = Array.from(
-    new Set(
-      projects.flatMap((project: ContentItem) =>
-        project.tags.map((tag) => tag.trim())
-      )
-    )
-  ).sort((a, b) => a.localeCompare(b, undefined, { sensitivity: "base" }));
+    new Set(projects.flatMap((project: ContentItem) => project.tags))
+  ).sort();
 
   return <ProjectsClient initialProjects={projects} initialTags={allTags} />;
 }

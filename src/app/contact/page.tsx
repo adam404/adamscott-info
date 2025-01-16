@@ -3,7 +3,6 @@
 import { useState } from "react";
 import Link from "next/link";
 import Navigation from "@/components/Navigation";
-import Footer from "@/components/Footer";
 import PongBackground from "@/components/PongBackground";
 
 export default function ContactPage() {
@@ -306,7 +305,6 @@ export default function ContactPage() {
             </div>
           </div>
         </div>
-        <Footer />
       </div>
     </div>
   );

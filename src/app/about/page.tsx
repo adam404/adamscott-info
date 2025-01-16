@@ -1,7 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
 import Navigation from "@/components/Navigation";
-import Footer from "@/components/Footer";
 import { getTestimonials } from "@/lib/content";
 import { Metadata } from "next";
 
@@ -244,7 +243,6 @@ export default async function About() {
           </div>
         </div>
       </main>
-      <Footer />
     </div>
   );
 }

@@ -1,5 +1,4 @@
 import Navigation from "@/components/Navigation";
-import Footer from "@/components/Footer";
 import { getAllPosts } from "@/lib/content";
 import ClientBlog from "@/components/blog/ClientBlog";
 import { Metadata } from "next";
@@ -114,7 +113,6 @@ export default async function Blog() {
       <Suspense fallback={<BlogLoading />}>
         <ClientBlog initialPosts={posts} initialTags={allTags} />
       </Suspense>
-      <Footer />
     </div>
   );
 }
