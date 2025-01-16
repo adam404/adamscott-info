@@ -21,8 +21,26 @@ const GA_MEASUREMENT_ID = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID;
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteConfig.url),
-  title: siteConfig.title,
+  title: {
+    default: siteConfig.title,
+    template: `%s | ${siteConfig.name}`,
+  },
   description: siteConfig.description,
+  keywords: [
+    "Software Engineer",
+    "Technical Leader",
+    "Web Development",
+    "Cloud Architecture",
+    "React",
+    "Next.js",
+    "TypeScript",
+  ],
+  authors: [{ name: "Adam Scott", url: "https://adamscott.info" }],
+  creator: "Adam Scott",
+  publisher: "Adam Scott",
+  alternates: {
+    canonical: siteConfig.url,
+  },
   icons: {
     icon: [
       {
@@ -51,6 +69,14 @@ export const metadata: Metadata = {
     siteName: siteConfig.name,
     locale: "en_US",
     type: "website",
+    images: [
+      {
+        url: `${siteConfig.url}/og-image.png`,
+        width: 1200,
+        height: 630,
+        alt: siteConfig.title,
+      },
+    ],
   },
   robots: {
     index: true,
@@ -66,10 +92,11 @@ export const metadata: Metadata = {
   twitter: {
     title: siteConfig.name,
     card: "summary_large_image",
+    creator: "@adamscott",
+    images: [`${siteConfig.url}/twitter-image.png`],
   },
   verification: {
-    google: "your-google-verification-code",
-    yandex: "your-yandex-verification-code",
+    google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION,
   },
 };
 
@@ -79,27 +106,48 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html
-      lang="en"
-      className={`${GeistSans.variable} ${GeistMono.variable} ${alata.variable}`}
-    >
+    <html lang="en" className={`${alata.variable}`}>
       <head>
         <Script
-          src={`https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`}
-          strategy="afterInteractive"
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "Person",
+              name: "Adam Scott",
+              url: siteConfig.url,
+              sameAs: [
+                "https://www.linkedin.com/in/adam404",
+                "https://github.com/adam404",
+                "https://twitter.com/adamscott",
+              ],
+              jobTitle: "Software Engineer & Technical Leader",
+              description: siteConfig.description,
+            }),
+          }}
         />
-        <Script id="google-analytics" strategy="afterInteractive">
-          {`
-            window.dataLayer = window.dataLayer || [];
-            function gtag(){dataLayer.push(arguments);}
-            gtag('js', new Date());
-            gtag('config', '${GA_MEASUREMENT_ID}');
-          `}
-        </Script>
       </head>
-      <body className={`${GeistSans.className} flex min-h-screen flex-col`}>
-        <main className="flex-1">{children}</main>
-        <Footer />
+      <body className="min-h-screen bg-background font-sans antialiased">
+        {GA_MEASUREMENT_ID && (
+          <Script
+            src={`https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`}
+            strategy="afterInteractive"
+          />
+        )}
+        {GA_MEASUREMENT_ID && (
+          <Script id="google-analytics" strategy="afterInteractive">
+            {`
+              window.dataLayer = window.dataLayer || [];
+              function gtag(){dataLayer.push(arguments);}
+              gtag('js', new Date());
+              gtag('config', '${GA_MEASUREMENT_ID}');
+            `}
+          </Script>
+        )}
+        <div className="relative flex min-h-screen flex-col">
+          {children}
+          <Footer />
+        </div>
         <Analytics />
       </body>
     </html>

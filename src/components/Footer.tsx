@@ -21,6 +21,30 @@ export default function Footer() {
             >
               Privacy Policy
             </Link>
+            <Link
+              href="https://www.linkedin.com/in/adam404"
+              className="hover:text-gray-900 dark:hover:text-gray-200 transition-colors"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              LinkedIn
+            </Link>
+            <Link
+              href="https://github.com/adam404"
+              className="hover:text-gray-900 dark:hover:text-gray-200 transition-colors"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              GitHub
+            </Link>
+            <Link
+              href="https://twitter.com/adamscott"
+              className="hover:text-gray-900 dark:hover:text-gray-200 transition-colors"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Twitter
+            </Link>
           </nav>
         </div>
       </div>
