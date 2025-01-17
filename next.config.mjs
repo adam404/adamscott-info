@@ -16,14 +16,14 @@ const nextConfig = {
       },
     ],
   },
-  output: "standalone",
+  
   experimental: {
     // Ensure proper RSC handling
     serverActions: {
       bodySizeLimit: "2mb", // Adjust as needed
     },
     // Optional: Enable if needed
-    serverComponentsExternalPackages: ["sharp", "canvas"],
+    serverExternalPackages: ["sharp", "canvas"],
   },
 };
 
