@@ -38,7 +38,7 @@ export default function Footer() {
               GitHub
             </Link>
             <Link
-              href="https://twitter.com/adamscott"
+              href="https://twitter.com/adam404"
               className="hover:text-gray-900 dark:hover:text-gray-200 transition-colors"
               target="_blank"
               rel="noopener noreferrer"
