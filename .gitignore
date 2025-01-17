@@ -1,3 +1,10 @@
 node_modules
 .next
 .env
+.next/cache
+.next/trace
+node_modules/.cache
+*.log
+.next/cache/images/
+.next/cache/webpack/
+.DS_Store

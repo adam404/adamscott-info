@@ -1,3 +1,7 @@
 .next/cache
 .git
 .next/cache/webpack
+.next/trace
+node_modules/.cache
+.env
+*.log
