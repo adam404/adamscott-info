@@ -1,0 +1,12 @@
+{
+  "version": 2,
+  "buildCommand": "yarn clean && NEXT_TELEMETRY_DISABLED=1 NEXT_CACHE=false yarn build",
+  "outputDirectory": ".next",
+  "cleanUrls": true,
+  "public": false,
+  "github": {
+    "enabled": true,
+    "silent": true
+  },
+  "ignoreCommand": "git diff HEAD^ HEAD --quiet ./"
+}

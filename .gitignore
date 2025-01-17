@@ -8,4 +8,6 @@ node_modules/.cache
 .next/cache/images/
 .next/cache/webpack/
 .DS_Store
-.vercel
+
+# Don't ignore these
+!vercel.json
