@@ -9,7 +9,6 @@
     "start": "next start",
     "lint": "next lint",
     "type-check": "tsc",
-    "postbuild": "rm -rf .next/cache",
     "optimize-images": "node scripts/optimize-images.js",
     "clean": "rm -rf .next && rm -rf node_modules/.cache"
   },
