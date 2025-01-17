@@ -1,2 +1,3 @@
 .next/cache
 .git
+.next/cache/webpack
