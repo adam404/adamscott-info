@@ -1,5 +1,6 @@
 import createMDX from "@next/mdx";
 import remarkGfm from "remark-gfm";
+import withBundleAnalyzer from "@next/bundle-analyzer";
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
@@ -8,9 +9,10 @@ const nextConfig = {
   generateBuildId: async () => {
     return `build-${Date.now()}`;
   },
-  output: "standalone",
+  output: "export",
   distDir: ".next",
   images: {
+    unoptimized: true,
     remotePatterns: [
       {
         protocol: "https",
@@ -18,12 +20,17 @@ const nextConfig = {
       },
     ],
   },
-
   experimental: {
-    // Ensure proper RSC handling
-    serverActions: {
-      bodySizeLimit: "2mb", // Adjust as needed
-    },
+    optimizePackageImports: ["@heroicons/react"],
+  },
+  webpack: (config, { isServer }) => {
+    // Optimize the bundle size
+    config.optimization = {
+      ...config.optimization,
+      minimize: true,
+      minimizer: [...(config.optimization.minimizer || [])],
+    };
+    return config;
   },
 };
 
@@ -34,4 +41,10 @@ const withMDX = createMDX({
   },
 });
 
-export default withMDX(nextConfig);
+// Analyze bundle if ANALYZE is set
+const analyzeBundleEnabled = process.env.ANALYZE === "true";
+const withBundleAnalysis = withBundleAnalyzer({
+  enabled: analyzeBundleEnabled,
+});
+
+export default withBundleAnalysis(withMDX(nextConfig));

@@ -1,8 +1,30 @@
-.next/cache/**
-.next/cache/webpack/**
-.next/cache/images/**
+# Cache and build artifacts
+.next/cache
+.next/cache/**/*
+.next/server/**/*.js.nft.json
+.next/server/**/*.json
+.next/server/chunks
+.next/trace
+.next/static/chunks/*.js.map
+.next/static/development
+.next/static/webpack
+
+# Development files
+node_modules
 node_modules/.cache
 .git
-.env
+.env*
 *.log
 .vercel
+
+# Build manifests
+.next/build-manifest.json
+.next/react-loadable-manifest.json
+.next/server/middleware-manifest.json
+.next/server/middleware-build-manifest.json
+.next/server/middleware-react-loadable-manifest.json
+
+# Test files
+__tests__
+*.test.*
+*.spec.*
