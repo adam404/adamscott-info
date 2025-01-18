@@ -1,11 +1,3 @@
 {
-  "version": 2,
-  "buildCommand": "yarn clean && NEXT_TELEMETRY_DISABLED=1 NEXT_CACHE=false yarn build",
-  "framework": "nextjs",
-  "cleanUrls": true,
-  "public": false,
-  "github": {
-    "enabled": true,
-    "silent": true
-  }
+  "framework": "nextjs"
 }

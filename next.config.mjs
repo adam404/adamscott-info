@@ -9,8 +9,9 @@ const nextConfig = {
   generateBuildId: async () => {
     return `build-${Date.now()}`;
   },
-  output: "standalone",
-  distDir: ".next",
+  experimental: {
+    optimizePackageImports: ["@heroicons/react"],
+  },
   images: {
     unoptimized: true,
     remotePatterns: [
@@ -19,9 +20,6 @@ const nextConfig = {
         hostname: "**",
       },
     ],
-  },
-  experimental: {
-    optimizePackageImports: ["@heroicons/react"],
   },
   webpack: (config, { isServer }) => {
     // Optimize the bundle size
