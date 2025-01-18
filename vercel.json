@@ -8,5 +8,11 @@
     "enabled": true,
     "silent": true
   },
-  "ignoreCommand": "git diff HEAD^ HEAD --quiet ./"
+  "ignoreCommand": "git diff HEAD^ HEAD --quiet ./",
+  "functions": {
+    "src/app/api/**/*": {
+      "runtime": "edge",
+      "memory": 128
+    }
+  }
 }

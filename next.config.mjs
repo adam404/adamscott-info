@@ -9,7 +9,7 @@ const nextConfig = {
   generateBuildId: async () => {
     return `build-${Date.now()}`;
   },
-  output: "export",
+  output: "standalone",
   distDir: ".next",
   images: {
     unoptimized: true,
