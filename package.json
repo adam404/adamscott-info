@@ -5,10 +5,10 @@
   "main": "index.js",
   "scripts": {
     "dev": "next dev",
-    "build": "NEXT_TELEMETRY_DISABLED=1 NEXT_CACHE=false next build",
+    "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "type-check": "tsc",
+    "type-check": "tsc --noEmit",
     "optimize-images": "node scripts/optimize-images.js",
     "clean": "rm -rf .next && rm -rf node_modules/.cache"
   },

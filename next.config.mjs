@@ -1,6 +1,11 @@
 import createMDX from "@next/mdx";
 import remarkGfm from "remark-gfm";
 import withBundleAnalyzer from "@next/bundle-analyzer";
+import { fileURLToPath } from 'url';
+import { dirname, join } from 'path';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
@@ -21,13 +26,12 @@ const nextConfig = {
       },
     ],
   },
-  webpack: (config, { isServer }) => {
-    // Optimize the bundle size
-    config.optimization = {
-      ...config.optimization,
-      minimize: true,
-      minimizer: [...(config.optimization.minimizer || [])],
+  webpack: (config) => {
+    config.resolve.alias = {
+      ...config.resolve.alias,
+      '@': join(__dirname, 'src'),
     };
+
     return config;
   },
 };
