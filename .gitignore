@@ -9,6 +9,7 @@ node_modules/.cache
 .next/cache/webpack/
 .DS_Store
 out/
+.vercel
 
 # Don't ignore these
 !vercel.json

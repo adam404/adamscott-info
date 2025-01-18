@@ -6,8 +6,21 @@
     "/opt/homebrew/bin/vercel",
     "build"
   ],
-  "error": {
-    "code": "invalid_function_runtime",
-    "message": "Function Runtimes must have a valid version, for example `now-php@1.0.0`."
+  "builds": [
+    {
+      "require": "@vercel/next",
+      "requirePath": "/opt/homebrew/Cellar/vercel-cli/39.3.0/libexec/lib/node_modules/vercel/node_modules/@vercel/next/dist/index",
+      "apiVersion": 2,
+      "src": "package.json",
+      "use": "@vercel/next",
+      "config": {
+        "zeroConfig": true,
+        "framework": "nextjs",
+        "buildCommand": "yarn clean && NEXT_TELEMETRY_DISABLED=1 NEXT_CACHE=false yarn build"
+      }
+    }
+  ],
+  "features": {
+    "webAnalyticsVersion": "1.4.1"
   }
 }
