@@ -119,7 +119,7 @@ export default function RootLayout({
               sameAs: [
                 "https://www.linkedin.com/in/adam404",
                 "https://github.com/adam404",
-                "https://twitter.com/adamscott",
+                "https://x.com/adam404",
               ],
               jobTitle: "Software Engineer & Technical Leader",
               description: siteConfig.description,
