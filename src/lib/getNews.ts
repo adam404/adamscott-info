@@ -8,6 +8,8 @@ interface NewsItem {
   urlToImage: string;
 }
 
+const BLOCKED_TERMS = ["trump", "politic", "proud boys", "nazi"];
+
 const fetchNews = async (): Promise<NewsItem[]> => {
   const response = await fetch(
     `https://newsapi.org/v2/top-headlines?sources=techcrunch,the-verge,wired&pageSize=10&apiKey=${process.env.NEWS_API_KEY}`,
@@ -20,20 +22,26 @@ const fetchNews = async (): Promise<NewsItem[]> => {
 
   const data = await response.json();
   return data.articles
-    .filter(
-      (article: NewsItem) =>
-        article.title &&
-        article.title !== "[Removed]" &&
-        !article.title.includes("The Verge") &&
-        article.description &&
-        article.url &&
-        article.publishedAt &&
-        article.urlToImage &&
-        !article.title.toLowerCase().includes("trump") &&
-        !article.description.toLowerCase().includes("trump") &&
-        !article.title.toLowerCase().includes("politic") &&
-        !article.description.toLowerCase().includes("politic")
-    )
+    .filter((article: NewsItem) => {
+      if (
+        !article.title ||
+        !article.description ||
+        !article.url ||
+        !article.publishedAt ||
+        !article.urlToImage ||
+        article.title === "[Removed]" ||
+        article.title.includes("The Verge")
+      ) {
+        return false;
+      }
+
+      const contentToCheck = (
+        article.title +
+        " " +
+        article.description
+      ).toLowerCase();
+      return !BLOCKED_TERMS.some((term) => contentToCheck.includes(term));
+    })
     .slice(0, 3);
 };
 
