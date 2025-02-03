@@ -30,7 +30,8 @@ const fetchNews = async (): Promise<NewsItem[]> => {
         !article.publishedAt ||
         !article.urlToImage ||
         article.title === "[Removed]" ||
-        article.title.includes("The Verge")
+        article.title.includes("The Verge") ||
+        article.urlToImage.toLowerCase().endsWith(".mp4")
       ) {
         return false;
       }
