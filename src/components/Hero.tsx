@@ -44,7 +44,7 @@ export default function Hero({ news }: HeroProps) {
           <div className="mt-24 sm:mt-32 lg:mt-16">
             <Link href="/about" className="inline-flex space-x-6">
               <span className="rounded-full bg-primary/10 px-3 py-1 text-sm font-semibold leading-6 text-primary ring-1 ring-inset ring-primary/20">
-                Available for hire
+                Engineering Manager @ Stealth Startup
               </span>
             </Link>
           </div>

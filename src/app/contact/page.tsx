@@ -99,7 +99,9 @@ export default function ContactPage() {
 
       {/* Content */}
       <div
-        className={`relative ${showUI ? "z-10" : "pointer-events-none opacity-0"} transition-opacity duration-300`}
+        className={`relative ${
+          showUI ? "z-10" : "pointer-events-none opacity-0"
+        } transition-opacity duration-300`}
         onClick={(e) => {
           if (e.target === e.currentTarget) {
             setShowUI((prev) => !prev);
@@ -188,7 +190,7 @@ export default function ContactPage() {
                   </a>
                 </div>
 
-                <div className="flex items-center space-x-4">
+                {/* <div className="flex items-center space-x-4">
                   <svg
                     className="w-6 h-6 text-blue-600"
                     fill="none"
@@ -212,7 +214,7 @@ export default function ContactPage() {
                       PDF
                     </span>
                   </a>
-                </div>
+                </div> */}
               </div>
             </div>
 

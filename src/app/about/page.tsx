@@ -33,6 +33,12 @@ export const metadata: Metadata = {
 
 const timeline = [
   {
+    year: "2025-Now&nbsp&nbsp;",
+    title: "Engineering Manager",
+    company: "Stealth Startup",
+    description: "Building something new.",
+  },
+  {
     year: "2014-2024",
     title: "Technology Director / Lead Full-Stack Engineer",
     company: "Launch",
@@ -165,9 +171,12 @@ export default async function About() {
                   key={index}
                   className="flex flex-col gap-x-4 gap-y-2 lg:flex-row"
                 >
-                  <div className="flex-none text-2xl font-semibold text-blue-600">
-                    {item.year}
-                  </div>
+                  <div
+                    className="flex-none text-2xl font-semibold text-blue-600"
+                    dangerouslySetInnerHTML={{
+                      __html: item.year,
+                    }}
+                  />
                   <div>
                     <div className="font-semibold text-gray-900 dark:text-white">
                       {item.title}
